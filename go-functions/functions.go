@@ -66,7 +66,12 @@ func Simulate(w http.ResponseWriter, r *http.Request) {
 		p++
 	}
 
-	wins := make(map[string]float32)
+	var (
+		mu sync.Mutex
+		wins map[string]float32
+	)
+
+	wins = make(map[string]float32)
 	for _, player := range players {
 		wins[player] = 0
 	}
@@ -78,9 +83,11 @@ func Simulate(w http.ResponseWriter, r *http.Request) {
 		go func () {
 			defer wg.Done()
 			winners := doSimulation(body.Games, body.Picks, players)
+			mu.Lock()
 			for _, winner := range winners {
 				wins[winner] += 1 / float32(len(winners))
 			}
+			mu.Unlock()
 		}()
 	}
 

@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"functions"
 	"github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/oettingerj/functions"
 	"log"
 	"os"
 )

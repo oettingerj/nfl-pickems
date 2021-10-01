@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import {getFirestore, collection, doc, getDocs} from 'firebase/firestore'
+import {getFirestore, collection, getDocs} from 'firebase/firestore'
 import type {Timestamp} from 'firebase/firestore'
 
 export type Picks = {
