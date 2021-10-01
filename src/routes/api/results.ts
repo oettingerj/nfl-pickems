@@ -10,8 +10,8 @@ const calculateWinPcts = (games: Game[], picks: Picks, numSims: number) => {
 }
 
 let simUrl
-// simUrl = 'https://us-central1-nfl-pickems-5e76c.cloudfunctions.net/simulate'
-simUrl = 'http://localhost:8080/simulate'
+simUrl = 'https://us-central1-nfl-pickems-5e76c.cloudfunctions.net/simulate'
+// simUrl = 'http://localhost:8080/simulate'
 
 export const get: RequestHandler = async ({  }) => {
     const gameIds = await getGameIds()

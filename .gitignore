@@ -5,3 +5,5 @@ node_modules
 /package
 firebase-debug.log
 ui-debug.log
+.idea/
+.firebase/
