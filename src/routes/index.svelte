@@ -52,34 +52,34 @@
 {:else}
     <div class="flex flex-col text-gray-800">
         <div class="flex items-center justify-around">
-            <img class="h-32" src="/nfl-logo.svg" alt="nfl logo">
-            <h1 class="text-3xl">NFL PickEms 2.0</h1>
-            <img class="h-32" src="/nfl-logo.svg" alt="nfl logo">
+            <img class="sm:h-32 h-20" src="/nfl-logo.svg" alt="nfl logo">
+            <h1 class="sm:text-3xl text-lg">NFL PickEms 2.0</h1>
+            <img class="sm:h-32 h-20" src="/nfl-logo.svg" alt="nfl logo">
         </div>
-        <div class="flex flex-col items-center mb-5">
+        <div class="flex flex-col items-center">
             <h2 class="text-xl mb-1">Win Pcts</h2>
-            <div class="rounded-lg items-center border border-gray-300 mx-32 overflow-auto">
-                <table class="min-w-full divide-y divide-gray-200 text-center">
-                    <thead class="bg-gray-50">
-                    <tr>
-                        {#each players as player}
-                            <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{player}</th>
-                        {/each}
-                    </tr>
-                    </thead>
-                    <tbody class="bg-white">
-                    <tr>
-                        {#each players as player}
-                            <td class="px-6 py-4 whitespace-nowrap font-medium">
-                                {Math.round(winPcts[player] * 100)}%
-                            </td>
-                        {/each}
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
-        <div class="mx-20 mb-10 rounded-lg border border-gray-300 overflow-auto">
+        <div class="mb-5 md:mx-32 mx-5 overflow-auto rounded-lg border border-gray-300">
+            <table class="min-w-full divide-y divide-gray-200 text-center">
+                <thead class="bg-gray-50">
+                <tr>
+                    {#each players as player}
+                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{player}</th>
+                    {/each}
+                </tr>
+                </thead>
+                <tbody class="bg-white">
+                <tr>
+                    {#each players as player}
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">
+                            {Math.round(winPcts[player] * 100)}%
+                        </td>
+                    {/each}
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="md:mx-20 mx-5 mb-10 rounded-lg border border-gray-300 overflow-auto">
             <table class="min-w-full divide-y divide-gray-200 text-center">
                 <thead class="bg-gray-50">
                 <tr class="divide-x divide-gray-200">
