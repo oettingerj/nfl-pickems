@@ -33,6 +33,11 @@ type SimBody struct {
 	NumSims int `json:"numSims"`
 }
 
+type Response struct {
+	WinPcts map[string]float32 `json:"winPcts"`
+	Scores map[string]int `json:"scores"`
+}
+
 func Simulate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost && r.Method != http.MethodOptions {
 		http.Error(w, "405 - Method Not Allowed", http.StatusMethodNotAllowed)
@@ -92,6 +97,8 @@ func Simulate(w http.ResponseWriter, r *http.Request) {
 		}()
 	}
 
+	scores := calculateScores(body.Games, body.Picks, players)
+
 	wg.Wait()
 
 	winPcts := make(map[string]float32)
@@ -103,8 +110,13 @@ func Simulate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	response := Response{
+		Scores: scores,
+		WinPcts: winPcts,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	jsonBody, err := json.Marshal(winPcts)
+	jsonBody, err := json.Marshal(response)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Error building response body", http.StatusInternalServerError)
@@ -116,6 +128,26 @@ func Simulate(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		http.Error(w, "Error sending response", http.StatusInternalServerError)
 	}
+}
+
+func calculateScores(games []Game, picks Picks, players []string) map[string]int {
+	scores := make(map[string]int)
+	for _, player := range players {
+		scores[player] = 0
+	}
+
+	for _, game := range games {
+		if game.Winner != nil {
+			for _, player := range players {
+				pick := picks[player][game.Id]
+				if pick.Pick == *game.Winner {
+					scores[player] += pick.Weight
+				}
+			}
+		}
+	}
+
+	return scores
 }
 
 func doSimulation(games []Game, picks Picks, players []string) []string {

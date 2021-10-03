@@ -43,7 +43,8 @@ export const get: RequestHandler = async () => {
         body: {
             games,
             picks,
-            winPcts: response.data
+            winPcts: response.data.winPcts,
+            scores: response.data.scores
         }
     }
 }
