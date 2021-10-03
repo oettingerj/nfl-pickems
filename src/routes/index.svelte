@@ -39,6 +39,18 @@
     export let winPcts: {}
 
     const players = Object.keys(picks)
+
+    const columnStyles = (player, game) => {
+        if (!game.winner) {
+            return ''
+        }
+
+        if (picks[player][game.id].pick === game.winner) {
+            return 'bg-green-300'
+        } else {
+            return 'bg-red-400'
+        }
+    }
 </script>
 
 {#if !submissionLock}
@@ -64,14 +76,14 @@
                 <thead class="bg-gray-50">
                 <tr>
                     {#each players as player}
-                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{player}</th>
+                        <th class="px-3 md:px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{player}</th>
                     {/each}
                 </tr>
                 </thead>
                 <tbody class="bg-white">
                 <tr>
                     {#each players as player}
-                        <td class="px-6 py-4 whitespace-nowrap font-medium">
+                        <td class="px-3 md:px-6 py-4 whitespace-nowrap font-medium">
                             {Math.round(winPcts[player] * 100)}%
                         </td>
                     {/each}
@@ -83,30 +95,30 @@
             <table class="min-w-full divide-y divide-gray-200 text-center">
                 <thead class="bg-gray-50">
                 <tr class="divide-x divide-gray-200">
-                    <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Home</th>
-                    <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Away</th>
+                    <th class="px-3 md:px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Home</th>
+                    <th class="px-3 md:px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Away</th>
                     {#each players as player}
-                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{player}</th>
+                        <th class="px-3 md:px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{player}</th>
                     {/each}
                 </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                 {#each games as game}
                     <tr class="divide-x divide-gray-200">
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-3 md:px-6 py-4 whitespace-nowrap">
                             <div class="flex flex-col items-center">
                                 <span class="font-medium">{game.home}</span>
                                 <span class="text-sm font-light">{Math.round(game.teams[game.home].winPct * 100)}%</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-3 md:px-6 py-4 whitespace-nowrap">
                             <div class="flex flex-col items-center">
                                 <span class="font-medium">{game.away}</span>
                                 <span class="text-sm font-light">{Math.round(game.teams[game.away].winPct * 100)}%</span>
                             </div>
                         </td>
                         {#each players as player}
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class={`px-3 md:px-6 py-4 whitespace-nowrap ${columnStyles(player, game)}`}>
                                 {picks[player][game.id].pick} ({picks[player][game.id].weight})
                             </td>
                         {/each}

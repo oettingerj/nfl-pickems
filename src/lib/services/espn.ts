@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { DateTime } from 'luxon'
 
 const BASE_URL = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl'
 
@@ -6,11 +7,13 @@ export type Game = {
     id: string,
     home: string,
     away: string,
+    time: DateTime
     teams: {
         [team: string]: {
             winPct?: number
         }
-    }
+    },
+    winner?: string
 }
 
 export const getGameInfo = async (gameId) => {
@@ -18,6 +21,7 @@ export const getGameInfo = async (gameId) => {
     const data = response.data
     const gameInfo: Game = {
         id: gameId,
+        time: DateTime.fromISO(data.header.competitions[0].date),
         home: data.boxscore.teams[1].team.abbreviation,
         away: data.boxscore.teams[0].team.abbreviation,
         teams: {}

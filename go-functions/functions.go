@@ -17,6 +17,7 @@ type Game struct {
 	Home string `json:"home"`
 	Away string `json:"away"`
 	Teams map[string]Team `json:"teams"`
+	Winner *string `json:"winner"`
 }
 
 type Pick struct {
@@ -127,14 +128,17 @@ func doSimulation(games []Game, picks Picks, players []string) []string {
 		homeTeam := game.Home
 		awayTeam := game.Away
 
-		random := rand.Float32()
-
 		var winningTeam string
 
-		if game.Teams[homeTeam].WinPct >= random {
-			winningTeam = homeTeam
+		if game.Winner != nil {
+			winningTeam = *game.Winner
 		} else {
-			winningTeam = awayTeam
+			random := rand.Float32()
+			if game.Teams[homeTeam].WinPct >= random {
+				winningTeam = homeTeam
+			} else {
+				winningTeam = awayTeam
+			}
 		}
 
 		for i, player := range players {
