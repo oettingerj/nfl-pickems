@@ -119,7 +119,8 @@
                         </td>
                         {#each players as player}
                             <td class={`px-3 md:px-6 py-4 whitespace-nowrap ${columnStyles(player, game)}`}>
-                                {picks[player][game.id].pick} ({picks[player][game.id].weight})
+                                <span class="font-medium">{picks[player][game.id].pick}</span>
+                                <span class="text-xs">({picks[player][game.id].weight})</span>
                             </td>
                         {/each}
                     </tr>
