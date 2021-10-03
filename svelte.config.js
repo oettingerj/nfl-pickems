@@ -16,6 +16,9 @@ const config = {
 		vite: {
 			ssr: {
 				external: ['firebase']
+			},
+			optimizeDeps: {
+				exclude: ['firebase']
 			}
 		}
 	}

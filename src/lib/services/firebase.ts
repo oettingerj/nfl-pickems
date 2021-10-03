@@ -1,6 +1,6 @@
-import { initializeApp } from '@firebase/app'
-import {getFirestore, collection, getDocs} from '@firebase/firestore'
-import type {Timestamp} from '@firebase/firestore'
+import { initializeApp } from 'firebase/app'
+import {getFirestore, collection, getDocs} from 'firebase/firestore'
+import type {Timestamp} from 'firebase/firestore'
 
 export type Picks = {
     [player: string]: {
