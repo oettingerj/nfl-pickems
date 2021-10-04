@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
-		"preview": "svelte-kit preview"
+		"preview": "svelte-kit preview",
+		"start": "node build"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "^1.0.0-next.53",
