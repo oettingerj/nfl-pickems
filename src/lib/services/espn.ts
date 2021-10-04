@@ -16,6 +16,50 @@ export type Game = {
     winner?: string
 }
 
+export type Matchup = {
+    id: string,
+    odds: string,
+    teams: {
+        name: string,
+        abbr: string,
+        color: string,
+        logo: string
+    }[]
+}
+
+export const getMatchups = async (week) => {
+    const response = await axios.get(`${BASE_URL}/scoreboard?week=${week}`)
+    const games = response.data.events
+    const matchups: Matchup[] = []
+
+    for (const game of games) {
+        const teams = game.competitions[0].competitors
+        const teamData = []
+        for (let team of teams) {
+            team = team.team
+            teamData.push({
+                name: team.name,
+                abbr: team.abbreviation,
+                color: team.color,
+                logo: team.logo
+            })
+        }
+
+        let odds = null
+        if (game.competitions[0].odds && game.competitions[0].odds.length > 0) {
+            odds = game.competitions[0].odds[0].details
+        }
+
+        matchups.push({
+            id: game.id,
+            teams: teamData,
+            odds
+        })
+    }
+
+    return matchups
+}
+
 export const getGameInfo = async (gameId) => {
     const response = await axios.get(`${BASE_URL}/summary?event=${gameId}`)
     const data = response.data

@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
-import {getFirestore, collection, getDocs} from 'firebase/firestore'
-import type {Timestamp} from 'firebase/firestore'
+import { getFirestore, collection, getDocs } from 'firebase/firestore'
+import type { Timestamp } from 'firebase/firestore'
+import { has } from 'lodash-es'
 
 export type Picks = {
     [player: string]: {
@@ -21,7 +22,7 @@ const firebaseConfig = {
     appId: '1:776648999019:web:6aea3b0d024c061994f12e'
 }
 
-const app = initializeApp(firebaseConfig)
+initializeApp(firebaseConfig)
 
 export const getSubmissionLock = async () => {
     const db = getFirestore()
@@ -58,7 +59,7 @@ export const getPicks = async (week?: number) => {
         promises.push(getDocs(collection(game, 'picks')).then((snapshot) => {
             snapshot.forEach((doc) => {
                 const data = doc.data()
-                if (!picks.hasOwnProperty(doc.id)) {
+                if (!has(picks, doc.id)) {
                     picks[doc.id] = {}
                 }
                 picks[doc.id][game.id] = {

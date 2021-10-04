@@ -2,9 +2,4 @@
 node_modules
 /build
 /.svelte-kit
-/package
-firebase-debug.log
-ui-debug.log
 .idea/
-.firebase/
-.vercel_build_output/

@@ -3,7 +3,7 @@
     import { getSubmissionLock } from '$lib/services/firebase'
     import { DateTime } from 'luxon'
 
-    export const load: Load = async ({ page, session, fetch }) => {
+    export const load: Load = async ({ fetch }) => {
         const submissionLock = await getSubmissionLock()
         if (Date.now() < submissionLock) {
             return {
@@ -18,7 +18,7 @@
 
         return {
             props: {
-                submissionLock,
+                submissionLock: true,
                 games: response.games,
                 picks: response.picks,
                 winPcts: response.winPcts,
@@ -64,7 +64,7 @@
         </p>
     </div>
 {:else}
-    <div class="flex flex-col text-gray-800">
+    <div class="flex flex-col h-screen text-gray-800">
         <div class="flex items-center justify-around">
             <img class="sm:h-32 h-20" src="/nfl-logo.svg" alt="nfl logo">
             <h1 class="sm:text-3xl text-lg">NFL PickEms 2.0</h1>
@@ -73,8 +73,8 @@
         <div class="flex flex-col items-center">
             <h2 class="text-xl mb-1">Scores</h2>
         </div>
-        <div class="mb-5 md:mx-32 mx-5 overflow-auto rounded-lg border border-gray-300">
-            <table class="min-w-full divide-y divide-gray-200 text-center">
+        <div class="flex flex-col flex-shrink-0 mb-5 md:mx-32 mx-5 rounded-lg overflow-auto border border-gray-300">
+            <table class="divide-y divide-gray-200 text-center">
                 <thead class="bg-gray-50">
                 <tr>
                     {#each players as player}
@@ -94,8 +94,8 @@
                 </tbody>
             </table>
         </div>
-        <div class="flex flex-col flex-grow-0 md:mx-20 mx-5 mb-10 rounded-lg border border-gray-300 overflow-auto" style="height: 70vh">
-            <table class="min-w-full relative divide-y divide-gray-200 text-center">
+        <div class="flex flex-col flex-grow-0 md:mx-20 mx-5 mb-5 rounded-lg border border-gray-300 overflow-auto">
+            <table class="relative divide-y divide-gray-200 text-center">
                 <thead>
                 <tr class="divide-x divide-gray-200">
                     <th class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 rounded-tl-lg text-xs font-medium text-gray-500 uppercase tracking-wider">Home</th>
