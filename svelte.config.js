@@ -1,5 +1,5 @@
 import preprocess from 'svelte-preprocess'
-import adapter from '@sveltejs/adapter-vercel'
+import adapter from '@sveltejs/adapter-static'
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -17,8 +17,8 @@ const config = {
 			ssr: {
 				external: ['firebase']
 			},
-			optimizeDeps: {
-				exclude: ['firebase']
+			build: {
+				sourcemap: true
 			}
 		}
 	}
