@@ -106,7 +106,7 @@
     }
 </script>
 
-<div class="flex h-screen flex-col text-gray-800">
+<div class="flex h-screen w-screen flex-col text-gray-800">
     <Header/>
     {#if !submissionLock}
         <div class="flex flex-col items-center">
@@ -120,8 +120,8 @@
             </Card>
         </div>
     {:else}
-        <div class="flex md:mx-20 mx-5 mb-5">
-            <div class="flex items-end justify-center" style="width: {teamColumnWidth * 2}px">
+        <div class="flex sm:flex-row flex-col md:mx-20 mx-5 mb-5">
+            <div class="flex items-end justify-center mt-5" style="width: {teamColumnWidth * 2}px">
                 {#if runningSimulation}
                     <Button disabled size="lg" class="h-12 w-32">
                         <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -161,7 +161,7 @@
             </div>
         </div>
         <div class="flex flex-col flex-grow-0 md:mx-20 mx-5 mb-5 rounded-lg border border-gray-300 overflow-auto">
-            <table class="relative divide-y divide-gray-200 text-center">
+            <table class="divide-y divide-gray-200 text-center">
                 <thead>
                 <tr class="divide-x divide-gray-200">
                     <th bind:clientWidth={teamColumnWidth} class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">Home</th>

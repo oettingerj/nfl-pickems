@@ -19,13 +19,13 @@
     }
 </script>
 
-<div class="flex justify-center p-20">
+<div class="flex justify-center p-5 sm:p-20">
     <Card headerBgClass="bg-base-600">
         <div slot="header" class="flex flex-row text-white text-center text-lg font-medium items-center">
             <img src="/nfl-logo.svg" alt="NFL logo" class="h-20"/>
-            <span class="ml-3 text-2xl">NFL Pick 'Ems</span>
+            <span class="text-2xl">NFL Pick 'Ems</span>
         </div>
-        <div class="px-16 py-8">
+        <div class="px-2 sm:px-16 py-8">
             <Button size="lg" on:click={login} class="px-10">
                 <div slot="icon" class="px-1 py-1 mr-2 bg-white rounded-md">
                     <img src="/google-logo.svg" alt="Google logo" />
