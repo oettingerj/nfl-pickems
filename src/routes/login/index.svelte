@@ -14,6 +14,7 @@
     const login = async () => {
         const result = await googleLogin()
         await setUser(result.user)
+        console.log('logged in')
         await goto(nextUrl)
     }
 </script>

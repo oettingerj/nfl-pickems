@@ -5,7 +5,8 @@ import { getGameInfo } from '$lib/services/espn'
 import type { Game } from '$lib/services/espn'
 import axios from 'axios'
 
-const simUrl = 'https://us-central1-nfl-pickems-5e76c.cloudfunctions.net/simulate'
+export const SIM_URL = 'https://us-central1-nfl-pickems-5e76c.cloudfunctions.net/simulate'
+export const NUM_SIMS = 5000
 
 export const get: RequestHandler = async () => {
     const gameIds = await getGameIds()
@@ -35,10 +36,10 @@ export const get: RequestHandler = async () => {
 
     games.sort((a, b) => (a.time > b.time) ? 1 : -1)
 
-    const response = await axios.post(simUrl, {
+    const response = await axios.post(SIM_URL, {
         games,
         picks,
-        numSims: 5000
+        numSims: NUM_SIMS
     })
 
     return {

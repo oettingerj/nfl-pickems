@@ -4,8 +4,6 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signO
 import type { UserInfo } from 'firebase/auth'
 import type { Timestamp } from 'firebase/firestore'
 import { has } from 'lodash-es'
-import { browser } from '$app/env'
-import { goto } from '$app/navigation'
 import { user } from '$lib/stores/user'
 
 export type Picks = {
@@ -31,19 +29,19 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig)
 
-const verifyLoginStatus = () => {
+export const isLoggedIn = () => {
     const auth = getAuth()
-    onAuthStateChanged(auth, (u) => {
-        if (u) {
-            user.set(u)
-        } else {
-            goto('/login')
-        }
+    return new Promise((resolve, reject) => {
+        const unsubscribe = onAuthStateChanged(auth, (u) => {
+            unsubscribe()
+            if (u) {
+                user.set(u)
+                resolve(true)
+            } else {
+                resolve(false)
+            }
+        })
     })
-}
-
-if (browser) {
-    verifyLoginStatus()
 }
 
 export const googleLogin = async () => {
@@ -109,8 +107,6 @@ export const submitPicksForUser = async (uid, picks: PlayerPicks) => {
     const currentWeek = snapshot.docs[snapshot.size - 1].ref
     const gamesSnapshot = await getDocs(collection(currentWeek, 'games'))
     const games = gamesSnapshot.docs.map(doc => doc.ref)
-
-    console.log(picks)
 
     const promises = []
     for (const game of games) {

@@ -20,12 +20,12 @@
     const sizes = {
         sm: 'px-3 py-2 text-sm leading-4 rounded-md',
         md: 'px-4 py-2 text-sm rounded-md',
-        lg: 'px-4 py-2 text-base rounded-md',
-        xl: 'px-6 py-3 text-base rounded-md'
+        lg: 'px-4 py-2 rounded-md',
+        xl: 'px-6 py-3 rounded-md'
     }
 </script>
 
-<button {disabled} class={classNames('button cursor-pointer inline-flex items-center disabled:cursor-default disabled:opacity-50', selected ? selectedThemes[theme] : themes[theme], sizes[size], $$restProps.class)} on:click>
+<button {disabled} class={classNames('button cursor-pointer inline-flex justify-center items-center disabled:cursor-default disabled:opacity-50', selected ? selectedThemes[theme] : themes[theme], sizes[size], $$restProps.class)} on:click>
     {#if $$slots.icon}
         <div class="-ml-1 mr-2">
             <slot name="icon"/>
