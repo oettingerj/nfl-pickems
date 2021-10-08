@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
     import type { Load } from '@sveltejs/kit'
-    import { getSubmissionLock, getPlayers } from '$lib/services/firebase'
+    import { getSubmissionLock } from '$lib/services/firebase'
     import { DateTime } from 'luxon'
 
     export const load: Load = async ({ fetch }) => {
@@ -54,7 +54,7 @@
 
     let teamColumnWidth = 100
 
-    players = players.filter((p) => has(picks, p.id))
+    $: players = players.filter((p) => has(picks, p.id))
 
     let runningSimulation = false
 
