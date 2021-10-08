@@ -24,7 +24,9 @@ export type Matchup = {
         abbr: string,
         color: string,
         logo: string
-    }[]
+    }[],
+    pick?: string,
+    weight?: number
 }
 
 export const getMatchups = async (week) => {

@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
     import type { Load } from '@sveltejs/kit'
-    import { getSubmissionLock } from '$lib/services/firebase'
+    import { getSubmissionLock, getPlayers } from '$lib/services/firebase'
     import { DateTime } from 'luxon'
 
     export const load: Load = async ({ fetch }) => {
@@ -22,7 +22,8 @@
                 games: response.games,
                 picks: response.picks,
                 winPcts: response.winPcts,
-                scores: response.scores
+                scores: response.scores,
+                players: response.players
             }
         }
     }
@@ -31,6 +32,12 @@
 <script lang="ts">
     import type { Game } from '$lib/services/espn'
     import type { Picks } from '$lib/services/firebase'
+    import Header from '$lib/components/Header.svelte'
+    import {user} from '$lib/stores/user'
+    import Card from '$lib/components/Card.svelte'
+    import Button from '$lib/components/Button.svelte'
+    import {goto} from '$app/navigation'
+    import {has} from 'lodash-es'
 
     export let submissionLock: boolean
     export let lockTime: DateTime
@@ -39,8 +46,12 @@
     export let picks: Picks
     export let winPcts: {}
     export let scores: {}
+    export let players: {
+        name: string,
+        id: string
+    }[] = []
 
-    const players = Object.keys(picks)
+    players = players.filter((p) => has(picks, p.id))
 
     const columnStyles = (player, game) => {
         if (!game.winner) {
@@ -55,22 +66,21 @@
     }
 </script>
 
-{#if !submissionLock}
-    <div class="text-gray-800">
-        <h3>Time to make your picks!</h3>
-        <p>
-            Picks lock for the week on {lockTime.toLocaleString()}. After this time, you will be able to
-            see everyone's picks and odds.
-        </p>
-    </div>
-{:else}
-    <div class="flex flex-col h-screen text-gray-800">
-        <div class="flex items-center justify-around">
-            <img class="sm:h-32 h-20" src="/nfl-logo.svg" alt="nfl logo">
-            <h1 class="sm:text-3xl text-lg">NFL PickEms 2.0</h1>
-            <img class="sm:h-32 h-20" src="/nfl-logo.svg" alt="nfl logo">
-        </div>
+<div class="flex h-screen flex-col text-gray-800">
+    <Header/>
+    {#if !submissionLock}
         <div class="flex flex-col items-center">
+            <Card class="p-10 mt-20">
+                <h3 class="text-2xl font-medium">Time to make your picks!</h3>
+                <p class="mt-3">
+                    Picks lock for the week on {lockTime.toLocaleString()}. After this time, you will be able to
+                    see everyone's picks and odds.
+                </p>
+                <Button size="lg" class="mt-6" on:click={() => goto(`/picker${$user.uid ? `?uid=${$user.uid}` : ''}`)}>Make Picks</Button>
+            </Card>
+        </div>
+    {:else}
+        <div class="flex flex-col items-center mt-5">
             <h2 class="text-xl mb-1">Scores</h2>
         </div>
         <div class="flex flex-col flex-shrink-0 mb-5 md:mx-32 mx-5 rounded-lg overflow-auto border border-gray-300">
@@ -78,7 +88,7 @@
                 <thead class="bg-gray-50">
                 <tr>
                     {#each players as player}
-                        <th class="px-3 md:px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{player}</th>
+                        <th class="px-3 md:px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{player.name ?? player.id}</th>
                     {/each}
                 </tr>
                 </thead>
@@ -86,8 +96,8 @@
                 <tr>
                     {#each players as player}
                         <td class="px-3 md:px-6 py-4 whitespace-nowrap">
-                            <div class="text-xl font-medium">{scores[player]}</div>
-                            <div class="text-md text-gray-500">{Math.round(winPcts[player] * 100)}%</div>
+                            <div class="text-xl font-medium">{scores[player.id]}</div>
+                            <div class="text-md text-gray-500">{Math.round(winPcts[player.id] * 100)}%</div>
                         </td>
                     {/each}
                 </tr>
@@ -98,10 +108,10 @@
             <table class="relative divide-y divide-gray-200 text-center">
                 <thead>
                 <tr class="divide-x divide-gray-200">
-                    <th class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 rounded-tl-lg text-xs font-medium text-gray-500 uppercase tracking-wider">Home</th>
+                    <th class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">Home</th>
                     <th class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">Away</th>
                     {#each players as player, i}
-                        <th class={`px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider ${i === players.length - 1 ? 'rounded-tr-lg' : ''}`}>{player}</th>
+                        <th class={`px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider`}>{player.name ?? player.id}</th>
                     {/each}
                 </tr>
                 </thead>
@@ -121,9 +131,9 @@
                             </div>
                         </td>
                         {#each players as player}
-                            <td class={`px-3 md:px-6 py-4 whitespace-nowrap ${columnStyles(player, game)}`}>
-                                <span class="font-medium">{picks[player][game.id].pick}</span>
-                                <span class="text-xs">({picks[player][game.id].weight})</span>
+                            <td class={`px-3 md:px-6 py-4 whitespace-nowrap ${columnStyles(player.id, game)}`}>
+                                <span class="font-medium">{picks[player.id][game.id].pick}</span>
+                                <span class="text-xs">({picks[player.id][game.id].weight})</span>
                             </td>
                         {/each}
                     </tr>
@@ -131,5 +141,5 @@
                 </tbody>
             </table>
         </div>
-    </div>
-{/if}
+    {/if}
+</div>
