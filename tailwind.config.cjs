@@ -13,6 +13,9 @@ const config = {
 			},
 			colors: {
 				base: colors.indigo
+			},
+			screens: {
+				'desktop': {raw: '(hover: hover)'}
 			}
 		}
 	},

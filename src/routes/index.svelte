@@ -100,9 +100,9 @@
 
     const getTeamStyles = (team, winner) => {
         if (!winner || winner !== team) {
-            return 'hover:bg-green-100'
+            return 'desktop:hover:bg-green-100'
         }
-        return 'hover:bg-red-200 bg-green-200'
+        return 'desktop:hover:bg-red-200 bg-green-200'
     }
 </script>
 
