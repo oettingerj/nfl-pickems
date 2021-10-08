@@ -1,12 +1,13 @@
 <script context="module" lang="ts">
     import type { Load } from '@sveltejs/kit'
-    import { getPicksForUser, getSubmissionLock } from '$lib/services/firebase'
+    import { getPicksForUser, getSubmissionLock, getWeeks } from '$lib/services/firebase'
     import { browser } from '$app/env'
     import {orderBy} from 'lodash-es'
 
     export const load: Load = async ({ fetch, page }) => {
-        // const submissionLock = await getSubmissionLock()
-        const submissionLock = Date.now() + 10000000
+        const weeks = await getWeeks()
+        const currentWeek = weeks[weeks.length - 1]
+        const submissionLock = await getSubmissionLock(currentWeek)
         if (Date.now() >= submissionLock) {
             return {
                 props: {
@@ -19,10 +20,10 @@
 
         let picks
         if (browser && query.has('uid')) {
-            picks = await getPicksForUser(query.get('uid'))
+            picks = await getPicksForUser(query.get('uid'), currentWeek)
         }
 
-        const response = await fetch('/api/picker_data').then((res) => res.json())
+        const response = await fetch(`/api/picker_data?week=${currentWeek}`).then((res) => res.json())
 
         let matchups = response.matchups
 
@@ -41,7 +42,8 @@
         return {
             props: {
                 submissionLock,
-                matchups
+                matchups,
+                currentWeek
             }
         }
     }
@@ -59,6 +61,7 @@
 
     export let submissionLock: number
     export let matchups: Matchup[]
+    export let currentWeek: string
 
     let dragDisabled = true
     const flipDurationMs = 200
@@ -99,7 +102,7 @@
                     weight: matchups.length - i
                 }
             }
-            submitPicksForUser($user.uid, picks)
+            submitPicksForUser($user.uid, picks, currentWeek)
         }
     }
 </script>

@@ -50,6 +50,12 @@ export const googleLogin = async () => {
     return await signInWithPopup(auth, provider)
 }
 
+export const getWeeks = async () => {
+    const db = getFirestore()
+    const snapshot = await getDocs(collection(db, 'weeks'))
+    return snapshot.docs.map(doc => doc.id)
+}
+
 export const logOut = async () => {
     const auth = getAuth()
     return await signOut(auth)
@@ -65,10 +71,10 @@ export const setUser = async (user: UserInfo) => {
     })
 }
 
-export const getSubmissionLock = async () => {
+export const getSubmissionLock = async (week) => {
     const db = getFirestore()
-    const snapshot = await getDocs(collection(db, 'weeks'))
-    const submissionLock: Timestamp = snapshot.docs[snapshot.size - 1].get('submissionLock')
+    const snapshot = await getDoc(doc(db, 'weeks', week))
+    const submissionLock: Timestamp = snapshot.data().submissionLock
     return submissionLock.toMillis()
 }
 
@@ -78,13 +84,11 @@ export const getPlayers = async () => {
     return snapshot.docs.map(doc => doc.data())
 }
 
-export const getPicksForUser = async (uid) => {
+export const getPicksForUser = async (uid, week) => {
     const db = getFirestore()
     const picks = {}
-    const snapshot = await getDocs(collection(db, 'weeks'))
-    const currentWeek = snapshot.docs[snapshot.size - 1].ref
-    const gamesSnapshot = await getDocs(collection(currentWeek, 'games'))
-    const games = gamesSnapshot.docs.map(doc => doc.ref)
+    const snapshot = await getDocs(collection(db, 'weeks', week, 'games'))
+    const games = snapshot.docs.map(doc => doc.ref)
 
     const promises = []
     for (const game of games) {
@@ -101,11 +105,9 @@ export const getPicksForUser = async (uid) => {
     return picks
 }
 
-export const submitPicksForUser = async (uid, picks: PlayerPicks) => {
+export const submitPicksForUser = async (uid, picks: PlayerPicks, week) => {
     const db = getFirestore()
-    const snapshot = await getDocs(collection(db, 'weeks'))
-    const currentWeek = snapshot.docs[snapshot.size - 1].ref
-    const gamesSnapshot = await getDocs(collection(currentWeek, 'games'))
+    const gamesSnapshot = await getDocs(collection(db, 'weeks', week, 'games'))
     const games = gamesSnapshot.docs.map(doc => doc.ref)
 
     const promises = []
@@ -116,21 +118,17 @@ export const submitPicksForUser = async (uid, picks: PlayerPicks) => {
     await Promise.all(promises)
 }
 
-export const getGameIds = async (week?: number) => {
+export const getGameIds = async (week) => {
     const db = getFirestore()
-    const snapshot = await getDocs(collection(db, 'weeks'))
-    const currentWeek = snapshot.docs[week ? week - 1 : snapshot.size - 1].ref
-    const gamesSnapshot = await getDocs(collection(currentWeek, 'games'))
+    const gamesSnapshot = await getDocs(collection(db, 'weeks', week, 'games'))
     return gamesSnapshot.docs.map(doc => doc.id)
 }
 
-export const getPicks = async (week?: number) => {
+export const getPicks = async (week) => {
     const picks: Picks = {}
 
     const db = getFirestore()
-    const snapshot = await getDocs(collection(db, 'weeks'))
-    const currentWeek = snapshot.docs[week ? week - 1 : snapshot.size - 1].ref
-    const gamesSnapshot = await getDocs(collection(currentWeek, 'games'))
+    const gamesSnapshot = await getDocs(collection(db, 'weeks', week, 'games'))
     const games = gamesSnapshot.docs.map(doc => doc.ref)
 
     const promises = []

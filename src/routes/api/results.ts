@@ -8,14 +8,15 @@ import axios from 'axios'
 export const SIM_URL = 'https://us-central1-nfl-pickems-5e76c.cloudfunctions.net/simulate'
 export const NUM_SIMS = 5000
 
-export const get: RequestHandler = async () => {
-    const gameIds = await getGameIds()
+export const get: RequestHandler = async ({ query }) => {
+    const week = query.get('week')
+    const gameIds = await getGameIds(week)
     const games: Game[] = []
     let picks: Picks = {}
     let players = {}
 
     const promises = []
-    promises.push(getPicks().then((p) => {
+    promises.push(getPicks(week).then((p) => {
         picks = p
     }))
     promises.push(getPlayers().then((p) => {

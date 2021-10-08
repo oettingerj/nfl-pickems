@@ -1,10 +1,12 @@
 <script lang="ts" context="module">
     import type { Load } from '@sveltejs/kit'
-    import { getSubmissionLock } from '$lib/services/firebase'
+    import { getSubmissionLock, getWeeks } from '$lib/services/firebase'
     import { DateTime } from 'luxon'
 
-    export const load: Load = async ({ fetch }) => {
-        const submissionLock = await getSubmissionLock()
+    export const load: Load = async ({ fetch, page }) => {
+        const weeks = await getWeeks()
+        const currentWeek = page.query.has('week') ? page.query.get('week') : weeks[weeks.length - 1]
+        const submissionLock = await getSubmissionLock(currentWeek)
         if (Date.now() < submissionLock) {
             return {
                 props: {
@@ -14,10 +16,12 @@
             }
         }
 
-        const response = await fetch('/api/results').then((res) => res.json())
+        const response = await fetch(`/api/results?week=${currentWeek}`).then((res) => res.json())
 
         return {
             props: {
+                weeks,
+                currentWeek,
                 submissionLock: true,
                 games: response.games,
                 picks: response.picks,
@@ -51,6 +55,8 @@
         name: string,
         id: string
     }[] = []
+    export let weeks: string[]
+    export let currentWeek: string
 
     let teamColumnWidth = 100
 
@@ -73,6 +79,14 @@
         scores = response.scores
         winPcts = response.winPcts
         runningSimulation = false
+    }
+
+    let updatingWeek = false
+
+    const newWeek = async () => {
+        updatingWeek = true
+        await goto(`/?week=${currentWeek}`)
+        updatingWeek = false
     }
 
     const columnStyles = (player, game) => {
@@ -121,7 +135,25 @@
         </div>
     {:else}
         <div class="flex sm:flex-row flex-col md:mx-20 mx-5 mb-5">
-            <div class="flex items-end justify-center mt-5" style="width: {teamColumnWidth * 2}px">
+            <div class="flex flex-col items-center justify-end mt-5" style="width: {teamColumnWidth * 2}px">
+                <div class="flex flex-col mb-2 p-2 items-center">
+                    {#if !updatingWeek}
+                        <label for="week" class="block text-sm font-medium text-gray-700">Week</label>
+                        <select bind:value={currentWeek} on:change={newWeek} id="week" name="week" class="mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            {#each weeks as week}
+                                <option selected={week === currentWeek}>{week}</option>
+                            {/each}
+                        </select>
+                    {:else}
+                        <div class="flex items-center">
+                            <svg class="animate-spin h-8 w-8 text-base-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span class="text-xs w-20 text-gray-600 ml-2">Fetching data for week {currentWeek}...</span>
+                        </div>
+                    {/if}
+                </div>
                 {#if runningSimulation}
                     <Button disabled size="lg" class="h-12 w-32">
                         <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
