@@ -134,12 +134,12 @@
             </Card>
         </div>
     {:else}
-        <div class="flex sm:flex-row flex-col md:mx-20 mx-5 mb-5">
-            <div class="flex flex-col items-center justify-end mt-5" style="width: {teamColumnWidth * 2}px">
+        <div class="flex sm:flex-row items-center flex-col md:mx-20 mx-5 mb-5">
+            <div class="flex sm:flex-col items-center justify-end mt-5" style="width: {teamColumnWidth * 2}px">
                 <div class="flex flex-col mb-2 p-2 items-center">
                     {#if !updatingWeek}
                         <label for="week" class="block text-sm font-medium text-gray-700">Week</label>
-                        <select bind:value={currentWeek} on:change={newWeek} id="week" name="week" class="mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <select bind:value={currentWeek} on:change={newWeek} id="week" name="week" class="mt-1 block w-20 pl-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                             {#each weeks as week}
                                 <option selected={week === currentWeek}>{week}</option>
                             {/each}
@@ -162,7 +162,7 @@
                         </svg>
                     </Button>
                 {:else}
-                    <Button class="h-12 w-32" on:click={runSimulation} size="lg">Re-simulate</Button>
+                    <Button class="h-12 w-32 text-sm sm:text-md" on:click={runSimulation} size="lg">Re-simulate</Button>
                 {/if}
             </div>
             <div class="flex flex-grow flex-col">
@@ -192,7 +192,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col flex-grow-0 md:mx-20 mx-5 mb-5 rounded-lg border border-gray-300 overflow-auto">
+        <div class="flex flex-col md:mx-20 mx-5 mb-5 rounded-lg border border-gray-300 overflow-auto">
             <table class="divide-y divide-gray-200 text-center">
                 <thead>
                 <tr class="divide-x divide-gray-200">
