@@ -58,7 +58,8 @@
     export let weeks: string[]
     export let currentWeek: string
 
-    let teamColumnWidth = 100
+    let teamColumnWidth = 200
+    let screenWidth = 600
 
     $: players = players.filter((p) => has(picks, p.id))
 
@@ -120,6 +121,8 @@
     }
 </script>
 
+<svelte:window bind:innerWidth={screenWidth}/>
+
 <div class="flex h-screen w-screen flex-col text-gray-800">
     <Header/>
     {#if !submissionLock}
@@ -135,11 +138,11 @@
         </div>
     {:else}
         <div class="flex sm:flex-row items-center flex-col md:mx-20 mx-5 mb-5">
-            <div class="flex sm:flex-col items-center justify-end mt-5" style="width: {teamColumnWidth * 2}px">
-                <div class="flex flex-col mb-2 p-2 items-center">
+            <div class="flex sm:flex-col items-end sm:items-center justify-center mt-5 w-full" style={screenWidth > 640 ? `width: ${teamColumnWidth * 2}px` : ''}>
+                <div class="flex flex-col sm:mb-2 items-center w-full">
                     {#if !updatingWeek}
                         <label for="week" class="block text-sm font-medium text-gray-700">Week</label>
-                        <select bind:value={currentWeek} on:change={newWeek} id="week" name="week" class="mt-1 block w-20 pl-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <select bind:value={currentWeek} on:change={newWeek} id="week" name="week" class="mt-1 block w-20 pl-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
                             {#each weeks as week}
                                 <option selected={week === currentWeek}>{week}</option>
                             {/each}
@@ -154,16 +157,18 @@
                         </div>
                     {/if}
                 </div>
-                {#if runningSimulation}
-                    <Button disabled size="lg" class="h-12 w-32">
-                        <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </Button>
-                {:else}
-                    <Button class="h-12 w-32 text-sm sm:text-md" on:click={runSimulation} size="lg">Re-simulate</Button>
-                {/if}
+                <div class="flex flex-col w-full items-center">
+                    {#if runningSimulation}
+                        <Button disabled size="lg" class="h-12 w-32">
+                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </Button>
+                    {:else}
+                        <Button class="h-12 w-32" on:click={runSimulation} size="lg">Re-simulate</Button>
+                    {/if}
+                </div>
             </div>
             <div class="flex flex-grow flex-col">
                 <div class="flex flex-col items-center mt-5">
