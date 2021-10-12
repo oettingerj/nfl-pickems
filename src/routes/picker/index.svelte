@@ -93,7 +93,7 @@
                     weight: matchups.length - i
                 }
             }
-            await submitPicksForUser($user.uid, picks, currentWeek)
+            await submitPicksForUser($user.uid, picks, currentWeek).then(() => alert('Picks submitted! You may edit them here until picks lock for the week.'))
         } else {
             alert('Unable to submit picks.')
         }
