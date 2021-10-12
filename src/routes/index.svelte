@@ -63,6 +63,8 @@
 
     $: players = players.filter((p) => has(picks, p.id))
 
+    const lockTimeString = lockTime.toFormat("ccc LLL d 'at' h:mm'pm'")
+
     let runningSimulation = false
 
     const runSimulation = async () => {
@@ -127,10 +129,10 @@
     <Header/>
     {#if !submissionLock}
         <div class="flex flex-col items-center">
-            <Card class="p-10 mt-20">
+            <Card class="p-10 mx-5 mt-20">
                 <h3 class="text-2xl font-medium">Time to make your picks!</h3>
                 <p class="mt-3">
-                    Picks lock for the week on {lockTime.toLocaleString()}. After this time, you will be able to
+                    Picks lock for the week on {lockTimeString}. After this time, you will be able to
                     see everyone's picks and odds.
                 </p>
                 <Button size="lg" class="mt-6" on:click={() => goto(`/picker${$user.uid ? `?uid=${$user.uid}` : ''}`)}>Make Picks</Button>

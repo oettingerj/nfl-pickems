@@ -16,14 +16,14 @@
 
 <Card noPadding class={$$restProps.class}>
     <div class="flex justify-between text-gray-800">
-        <div class="flex flex-grow justify-around items-center p-3">
+        <div class="flex flex-grow justify-around items-center md:p-3">
             <Team on:click={() => onWinnerPick(matchup.teams[0].abbr)} team={matchup.teams[0]} picked={matchup.pick === matchup.teams[0].abbr}/>
             <div class="font-semibold text-2xl">
                 vs
             </div>
             <Team on:click={() => onWinnerPick(matchup.teams[1].abbr)} team={matchup.teams[1]} picked={matchup.pick === matchup.teams[1].abbr}/>
         </div>
-        <div class="flex flex-col items-center justify-center px-10 bg-gray-100" style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'} on:mousedown={startDrag} on:touchstart={startDrag}>
+        <div class="flex flex-col items-center justify-center px-4 md:px-10 bg-gray-100" style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'} on:mousedown={startDrag} on:touchstart={startDrag}>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
             </svg>

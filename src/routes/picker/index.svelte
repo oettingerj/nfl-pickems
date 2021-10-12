@@ -66,6 +66,8 @@
     let dragDisabled = true
     const flipDurationMs = 200
 
+    let screenWidth = 600
+
     const handleDragConsider = (event: CustomEvent<DndEvent>) => {
         matchups = event.detail.items as Matchup[]
     }
@@ -107,10 +109,17 @@
     }
 </script>
 
+<svelte:window bind:innerWidth={screenWidth}/>
+
 <div class="flex flex-col">
     <Header/>
-    <div class="flex justify-around">
-        <div class="my-10 mx-36 w-full">
+    <div class="flex flex-col md:flex-row justify-around">
+        {#if screenWidth < 768}
+            <div class="flex items-center justify-end w-full mt-2">
+                <Button disabled={!canSubmit(matchups)} size="xl" class="mr-2" on:click={submitPicks}>Submit</Button>
+            </div>
+        {/if}
+        <div class="my-10 px-5 md:px-36 w-full">
             <h2 class="text-2xl mb-5 font-medium text-center">Most Confident</h2>
             <section use:dndzone={{
                 items: matchups,
@@ -126,8 +135,10 @@
             </section>
             <h2 class="text-2xl mt-5 font-medium text-center">Least Confident</h2>
         </div>
-        <div class="mr-10">
-            <Button disabled={!canSubmit(matchups)} size="xl" class="mt-10" on:click={submitPicks}>Submit</Button>
-        </div>
+        {#if screenWidth >= 768}
+            <div class="mr-10">
+                <Button disabled={!canSubmit(matchups)} size="xl" class="mt-10" on:click={submitPicks}>Submit</Button>
+            </div>
+        {/if}
     </div>
 </div>
