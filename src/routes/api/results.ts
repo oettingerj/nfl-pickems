@@ -13,14 +13,17 @@ export const get: RequestHandler = async ({ query }) => {
     const gameIds = await getGameIds(week)
     const games: Game[] = []
     let picks: Picks = {}
-    let players = {}
+    let players = []
 
     const promises = []
     promises.push(getPicks(week).then((p) => {
         picks = p
     }))
     promises.push(getPlayers().then((p) => {
-        players = p
+        players = p.map((player) => ({
+            ...player,
+            shortName: player.name?.split(/(\s+)/)[0] ?? player.id
+        }))
     }))
 
     for (const gameId of gameIds) {

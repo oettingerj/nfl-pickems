@@ -2,7 +2,6 @@
     import type { Load } from '@sveltejs/kit'
     import { getSubmissionLock, getWeeks } from '$lib/services/firebase'
     import { DateTime } from 'luxon'
-    import { browser } from '$app/env'
 
     export const load: Load = async ({ fetch, page }) => {
         const weeks = await getWeeks()
@@ -66,7 +65,10 @@
 
     $: players = players.filter((p) => has(picks, p.id))
 
-    const lockTimeString = lockTime.toFormat("ccc LLL d 'at' h:mm'pm'")
+    let lockTimeString
+    if (lockTime) {
+        lockTimeString = lockTime.toFormat("ccc LLL d 'at' h:mm'pm'")
+    }
 
     let madePicks = false
     if (currentWeek && $user.uid) {
@@ -191,7 +193,7 @@
                         <thead class="bg-gray-50">
                         <tr>
                             {#each players as player}
-                                <th class="px-3 md:px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{player.name ?? player.id}</th>
+                                <th class="px-3 md:px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{player.shortName}</th>
                             {/each}
                         </tr>
                         </thead>
@@ -216,7 +218,7 @@
                     <th bind:clientWidth={teamColumnWidth} class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">Home</th>
                     <th class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">Away</th>
                     {#each players as player, i}
-                        <th class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">{player.name ?? player.id}</th>
+                        <th class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">{player.shortName}</th>
                     {/each}
                 </tr>
                 </thead>
