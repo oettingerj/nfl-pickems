@@ -18,31 +18,17 @@
 
         const query = page.query
 
-        let picks
-        if (browser && query.has('uid')) {
-            picks = await getPicksForUser(query.get('uid'), currentWeek)
+        let url = `/api/picker_data?week=${currentWeek}`
+        if (query.has('uid')) {
+            url = url.concat(`&uid=${query.get('uid')}`)
         }
 
-        const response = await fetch(`/api/picker_data?week=${currentWeek}`).then((res) => res.json())
-
-        let matchups = response.matchups
-
-        if (picks) {
-            for (const matchup of matchups) {
-                if (picks[matchup.id]) {
-                    const pick = picks[matchup.id]
-                    matchup.pick = pick.pick
-                    matchup.weight = pick.weight
-                }
-            }
-
-            matchups = orderBy(matchups, 'weight', 'desc')
-        }
+        const response = await fetch(url).then((res) => res.json())
 
         return {
             props: {
                 submissionLock,
-                matchups,
+                matchups: response.matchups,
                 currentWeek
             }
         }
@@ -80,6 +66,8 @@
         }
     }
 
+    let submitting = false
+
     const canSubmit = (picks) => {
         if (Date.now() >= submissionLock) {
             return false
@@ -94,7 +82,8 @@
         return true
     }
 
-    const submitPicks = () => {
+    const submitPicks = async () => {
+        submitting = true
         if (canSubmit(matchups)) {
             const picks = {}
             for (let i = 0; i < matchups.length; i++) {
@@ -104,8 +93,11 @@
                     weight: matchups.length - i
                 }
             }
-            submitPicksForUser($user.uid, picks, currentWeek)
+            await submitPicksForUser($user.uid, picks, currentWeek)
+        } else {
+            alert('Unable to submit picks.')
         }
+        submitting = false
     }
 </script>
 
@@ -116,7 +108,7 @@
     <div class="flex flex-col md:flex-row justify-around">
         {#if screenWidth < 768}
             <div class="flex items-center justify-end w-full mt-2">
-                <Button disabled={!canSubmit(matchups)} size="xl" class="mr-2" on:click={submitPicks}>Submit</Button>
+                <Button loading={submitting} disabled={!canSubmit(matchups)} size="xl" class="mr-2" on:click={submitPicks}>Submit</Button>
             </div>
         {/if}
         <div class="my-10 px-5 md:px-36 w-full">
@@ -137,7 +129,7 @@
         </div>
         {#if screenWidth >= 768}
             <div class="mr-10">
-                <Button disabled={!canSubmit(matchups)} size="xl" class="mt-10" on:click={submitPicks}>Submit</Button>
+                <Button loading={submitting} disabled={!canSubmit(matchups)} size="xl" class="mt-10" on:click={submitPicks}>Submit</Button>
             </div>
         {/if}
     </div>

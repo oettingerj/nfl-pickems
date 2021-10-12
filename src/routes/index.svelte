@@ -2,6 +2,7 @@
     import type { Load } from '@sveltejs/kit'
     import { getSubmissionLock, getWeeks } from '$lib/services/firebase'
     import { DateTime } from 'luxon'
+    import { browser } from '$app/env'
 
     export const load: Load = async ({ fetch, page }) => {
         const weeks = await getWeeks()
@@ -10,6 +11,7 @@
         if (Date.now() < submissionLock) {
             return {
                 props: {
+                    currentWeek,
                     submissionLock: false,
                     lockTime: DateTime.fromMillis(submissionLock)
                 }
@@ -43,6 +45,7 @@
     import {goto} from '$app/navigation'
     import {has} from 'lodash-es'
     import { NUM_SIMS, SIM_URL } from './api/results'
+    import { hasPicks } from '$lib/services/firebase'
 
     export let submissionLock: boolean
     export let lockTime: DateTime
@@ -64,6 +67,13 @@
     $: players = players.filter((p) => has(picks, p.id))
 
     const lockTimeString = lockTime.toFormat("ccc LLL d 'at' h:mm'pm'")
+
+    let madePicks = false
+    if (currentWeek && $user.uid) {
+        hasPicks(currentWeek, $user.uid).then((res) => {
+            madePicks = res
+        })
+    }
 
     let runningSimulation = false
 
@@ -135,7 +145,7 @@
                     Picks lock for the week on {lockTimeString}. After this time, you will be able to
                     see everyone's picks and odds.
                 </p>
-                <Button size="lg" class="mt-6" on:click={() => goto(`/picker${$user.uid ? `?uid=${$user.uid}` : ''}`)}>Make Picks</Button>
+                <Button size="lg" class="mt-6" on:click={() => goto(`/picker${$user.uid ? `?uid=${$user.uid}` : ''}`)}>{madePicks ? 'Edit' : 'Make'} Picks</Button>
             </Card>
         </div>
     {:else}

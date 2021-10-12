@@ -5,6 +5,7 @@ import type { UserInfo } from 'firebase/auth'
 import type { Timestamp } from 'firebase/firestore'
 import { has } from 'lodash-es'
 import { user } from '$lib/stores/user'
+import type { Matchup } from '$lib/services/espn'
 
 export type Picks = {
     [player: string]: PlayerPicks
@@ -122,6 +123,33 @@ export const getGameIds = async (week) => {
     const db = getFirestore()
     const gamesSnapshot = await getDocs(collection(db, 'weeks', week, 'games'))
     return gamesSnapshot.docs.map(doc => doc.id)
+}
+
+export const hasGame = async (week, gameId) => {
+    const db = getFirestore()
+    const game = await getDoc(doc(db, 'weeks', week, 'games', gameId))
+    return game.exists()
+}
+
+export const hasPicks = async (week, uid) => {
+    const db = getFirestore()
+    const games = await getDocs(collection(db, 'weeks', week, 'games'))
+    if (games.docs.length > 0) {
+        const pick = await getDoc(doc(games.docs[0].ref, 'picks', uid))
+        return pick.exists()
+    }
+    return false
+}
+
+export const setGames = async (week, matchups: Matchup[]) => {
+    const db = getFirestore()
+
+    const promises = []
+    for (const matchup of matchups) {
+        promises.push(setDoc(doc(db, 'weeks', week, 'games', matchup.id), {}))
+    }
+
+    await Promise.all(promises)
 }
 
 export const getPicks = async (week) => {
