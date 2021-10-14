@@ -119,7 +119,9 @@ type SimResult struct {
 	picks map[string]Pick
 }
 
-func AutoRank(w http.ResponseWriter, r *http.Request) {
+// TODO: Make this function run in a somewhat reasonable time (currently doesn't come close to finishing)
+
+func autoRank(w http.ResponseWriter, r *http.Request) {
 	setUpRequest(r, w)
 
 	var body RankBody
