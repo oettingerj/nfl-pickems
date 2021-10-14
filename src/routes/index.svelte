@@ -86,8 +86,8 @@
     }
 
     let madePicks = false
-    if (currentWeek && $user.uid) {
-        hasPicks(currentWeek, $user.uid).then((res) => {
+    if (currentWeek && $user.id) {
+        hasPicks(currentWeek, $user.id).then((res) => {
             madePicks = res
         })
     }
@@ -162,7 +162,7 @@
                     see everyone's picks and odds.
                 </p>
                 <div class="flex mt-6 items-center">
-                    <Button size="lg" on:click={() => goto(`/picker${$user.uid ? `?uid=${$user.uid}` : ''}`)}>{madePicks ? 'Edit' : 'Make'} Picks</Button>
+                    <Button size="lg" on:click={() => goto(`/picker${$user.id ? `?uid=${$user.id}` : ''}`)}>{madePicks ? 'Edit' : 'Make'} Picks</Button>
                     <Button loading={updatingWeek} size="lg" theme="secondary" class="ml-2" on:click={() => changeWeek(parseInt(currentWeek) - 1)}>View Previous Weeks</Button>
                 </div>
             </Card>

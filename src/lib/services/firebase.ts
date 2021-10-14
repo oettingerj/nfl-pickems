@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, getDocs, getDoc, doc, setDoc } from 'firebase/firestore'
+import { getFirestore, collection, getDocs, getDoc, doc, setDoc, updateDoc } from 'firebase/firestore'
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth'
 import type { UserInfo } from 'firebase/auth'
 import type { Timestamp } from 'firebase/firestore'
@@ -18,6 +18,14 @@ export type PlayerPicks = {
     }
 }
 
+export type FirebaseUser = {
+    name: string,
+    photoURL: string,
+    id: string,
+    displayName?: string,
+    email: string
+}
+
 const firebaseConfig = {
     apiKey: 'AIzaSyBWzWqAPP_HGNxeMD2eAl7AsLBpKxVo8Kw',
     authDomain: 'nfl-pickems-5e76c.firebaseapp.com',
@@ -30,13 +38,19 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig)
 
+export const getUser = async (uid) => {
+    const db = getFirestore()
+    const userDoc = await getDoc(doc(db, 'players', uid))
+    return userDoc.data() as FirebaseUser
+}
+
 export const isLoggedIn = () => {
     const auth = getAuth()
     return new Promise((resolve, reject) => {
         const unsubscribe = onAuthStateChanged(auth, (u) => {
             unsubscribe()
             if (u) {
-                user.set(u)
+                getUser(u.uid).then((us) => user.set(us))
                 resolve(true)
             } else {
                 resolve(false)
@@ -64,11 +78,26 @@ export const logOut = async () => {
 
 export const setUser = async (user: UserInfo) => {
     const db = getFirestore()
-    setDoc(doc(db, 'players', user.uid), {
+    const userDoc = await getDoc(doc(db, 'players', user.uid))
+    const data: FirebaseUser = {
         name: user.displayName,
         photoURL: user.photoURL,
         email: user.email,
         id: user.uid
+    }
+
+    if (userDoc.exists()) {
+        await updateDoc(doc(db, 'players', user.uid), data)
+    } else {
+        data.displayName = data.name.split(/(\s+)/)[0]
+        await setDoc(doc(db, 'players', user.uid), data)
+    }
+}
+
+export const setDisplayName = async (uid, name) => {
+    const db = getFirestore()
+    await updateDoc(doc(db, 'players', uid), {
+        displayName: name
     })
 }
 

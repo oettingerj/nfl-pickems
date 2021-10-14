@@ -22,7 +22,7 @@ export const get: RequestHandler = async ({ query }) => {
     promises.push(getPlayers().then((p) => {
         players = p.map((player) => ({
             ...player,
-            shortName: player.name?.split(/(\s+)/)[0] ?? player.id
+            shortName: player.displayName ?? player.name?.split(/(\s+)/)[0] ?? player.id
         }))
     }))
 

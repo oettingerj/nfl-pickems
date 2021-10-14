@@ -1,12 +1,10 @@
 import { writable } from 'svelte/store'
 import type { Writable } from 'svelte/store'
-import type { UserInfo } from 'firebase/auth'
+import type { FirebaseUser } from '$lib/services/firebase'
 
-export const user: Writable<UserInfo> = writable({
-    displayName: null,
+export const user: Writable<FirebaseUser> = writable({
+    name: null,
     email: null,
-    phoneNumber: null,
     photoURL: null,
-    providerId: null,
-    uid: null
+    id: null
 })
