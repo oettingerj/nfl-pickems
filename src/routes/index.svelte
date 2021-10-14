@@ -5,25 +5,33 @@
 
     export const load: Load = async ({ fetch, page }) => {
         const weeks = await getWeeks()
-        const currentWeek = page.query.has('week') ? page.query.get('week') : weeks[weeks.length - 1]
+        const currentWeek = weeks[weeks.length - 1]
+        let selectedWeek = page.query.get('week')
         const submissionLock = await getSubmissionLock(currentWeek)
-        if (Date.now() < submissionLock) {
+        const areSubmissionsLocked = Date.now() >= submissionLock
+        if ((!selectedWeek && !areSubmissionsLocked) || (!areSubmissionsLocked && selectedWeek === currentWeek)) {
             return {
                 props: {
+                    weeks,
                     currentWeek,
-                    submissionLock: false,
+                    areSubmissionsLocked,
                     lockTime: DateTime.fromMillis(submissionLock)
                 }
             }
         }
 
-        const response = await fetch(`/api/results?week=${currentWeek}`).then((res) => res.json())
+        if (!selectedWeek) {
+            selectedWeek = currentWeek
+        }
+
+        const response = await fetch(`/api/results?week=${selectedWeek}`).then((res) => res.json())
 
         return {
             props: {
                 weeks,
                 currentWeek,
-                submissionLock: true,
+                selectedWeek,
+                areSubmissionsLocked,
                 games: response.games,
                 picks: response.picks,
                 winPcts: response.winPcts,
@@ -46,7 +54,7 @@
     import { NUM_SIMS, SIM_URL } from './api/results'
     import { hasPicks } from '$lib/services/firebase'
 
-    export let submissionLock: boolean
+    export let areSubmissionsLocked: boolean
     export let lockTime: DateTime
 
     export let games: Game[]
@@ -59,11 +67,16 @@
     }[] = []
     export let weeks: string[]
     export let currentWeek: string
+    export let selectedWeek: string
 
     let teamColumnWidth = 200
     let screenWidth = 600
 
     $: players = players.filter((p) => has(picks, p.id))
+
+    if (!areSubmissionsLocked) {
+        weeks = weeks.filter(w => w !== weeks[weeks.length - 1])
+    }
 
     let lockTimeString
     if (lockTime) {
@@ -78,6 +91,7 @@
     }
 
     let runningSimulation = false
+    let updatingWeek = false
 
     const runSimulation = async () => {
         runningSimulation = true
@@ -96,11 +110,9 @@
         runningSimulation = false
     }
 
-    let updatingWeek = false
-
-    const newWeek = async () => {
+    const changeWeek = async (week) => {
         updatingWeek = true
-        await goto(`/?week=${currentWeek}`)
+        await goto(`/?week=${week}`)
         updatingWeek = false
     }
 
@@ -139,7 +151,7 @@
 
 <div class="flex h-screen w-screen flex-col text-gray-800">
     <Header/>
-    {#if !submissionLock}
+    {#if !selectedWeek}
         <div class="flex flex-col items-center">
             <Card class="p-10 mx-5 mt-20">
                 <h3 class="text-2xl font-medium">Time to make your picks!</h3>
@@ -147,7 +159,10 @@
                     Picks lock for the week on {lockTimeString}. After this time, you will be able to
                     see everyone's picks and odds.
                 </p>
-                <Button size="lg" class="mt-6" on:click={() => goto(`/picker${$user.uid ? `?uid=${$user.uid}` : ''}`)}>{madePicks ? 'Edit' : 'Make'} Picks</Button>
+                <div class="flex mt-6 items-center">
+                    <Button size="lg" on:click={() => goto(`/picker${$user.uid ? `?uid=${$user.uid}` : ''}`)}>{madePicks ? 'Edit' : 'Make'} Picks</Button>
+                    <Button loading={updatingWeek} size="lg" theme="secondary" class="ml-2" on:click={() => changeWeek(parseInt(currentWeek) - 1)}>View Previous Weeks</Button>
+                </div>
             </Card>
         </div>
     {:else}
@@ -156,9 +171,9 @@
                 <div class="flex flex-col sm:mb-2 items-center w-full">
                     {#if !updatingWeek}
                         <label for="week" class="block text-sm font-medium text-gray-700">Week</label>
-                        <select bind:value={currentWeek} on:change={newWeek} id="week" name="week" class="mt-1 block w-20 pl-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                        <select bind:value={selectedWeek} on:change={() => changeWeek(selectedWeek)} id="week" name="week" class="mt-1 block w-20 pl-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
                             {#each weeks as week}
-                                <option selected={week === currentWeek}>{week}</option>
+                                <option selected={week === selectedWeek}>{week}</option>
                             {/each}
                         </select>
                     {:else}
@@ -167,7 +182,7 @@
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            <span class="text-xs w-20 text-gray-600 ml-2">Fetching data for week {currentWeek}...</span>
+                            <span class="text-xs w-20 text-gray-600 ml-2">Fetching data for week {selectedWeek}...</span>
                         </div>
                     {/if}
                 </div>

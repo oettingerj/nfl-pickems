@@ -1,8 +1,6 @@
 <script context="module" lang="ts">
     import type { Load } from '@sveltejs/kit'
     import { getPicksForUser, getSubmissionLock, getWeeks } from '$lib/services/firebase'
-    import { browser } from '$app/env'
-    import {orderBy} from 'lodash-es'
 
     export const load: Load = async ({ fetch, page }) => {
         const weeks = await getWeeks()
