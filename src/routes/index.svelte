@@ -72,7 +72,9 @@
     let teamColumnWidth = 200
     let screenWidth = 600
 
-    $: players = players.filter((p) => has(picks, p.id))
+    $: if (players) {
+        players = players.filter((p) => has(picks, p.id))
+    }
 
     if (!areSubmissionsLocked) {
         weeks = weeks.filter(w => w !== weeks[weeks.length - 1])
