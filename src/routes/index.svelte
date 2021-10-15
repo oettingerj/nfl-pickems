@@ -201,7 +201,7 @@
                     {/if}
                 </div>
             </div>
-            <div class="flex flex-grow flex-col">
+            <div class="flex w-full flex-grow flex-col">
                 <div class="flex flex-col items-center mt-5">
                     <h2 class="text-xl mb-1">Scores</h2>
                 </div>
