@@ -68,7 +68,11 @@ export const googleLogin = async () => {
 export const getWeeks = async () => {
     const db = getFirestore()
     const snapshot = await getDocs(collection(db, 'weeks'))
-    return snapshot.docs.map(doc => doc.id)
+    // Integer sort then map back to string
+    return snapshot.docs
+        .map(doc => parseInt(doc.id))
+        .sort((a, b) => (a - b))
+        .map(id => id.toString())
 }
 
 export const logOut = async () => {

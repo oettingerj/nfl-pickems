@@ -1,11 +1,27 @@
 import type { RequestHandler } from '@sveltejs/kit'
-import { getMatchups } from '$lib/services/espn'
-import { getPicksForUser, hasGame, setGames } from '$lib/services/firebase'
+import { Game, getGameInfo, getMatchups } from '$lib/services/espn'
+import { getGameIds, getPicks, getPicksForUser, hasGame, Picks, setGames } from '$lib/services/firebase'
 import { orderBy } from 'lodash-es'
 
 export const get: RequestHandler = async ({ query }) => {
     const week = query.get('week')
     let matchups = await getMatchups(week)
+
+    const games: Game[] = []
+    let allPicks: Picks = {}
+
+    const promises = []
+    promises.push(getPicks(week).then((p) => {
+        allPicks = p
+    }))
+
+    const gameIds = await getGameIds(week)
+    for (const gameId of gameIds) {
+        promises.push(getGameInfo(gameId).then((game) => {
+            games.push(game)
+        }))
+    }
+    await Promise.all(promises)
 
     const gameDocsExist = await hasGame(week, matchups[0].id)
     if (!gameDocsExist) {
@@ -31,7 +47,9 @@ export const get: RequestHandler = async ({ query }) => {
 
     return {
         body: {
-            matchups
+            matchups,
+            games,
+            allPicks
         }
     }
 }

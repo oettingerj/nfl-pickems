@@ -6,6 +6,7 @@ import type { Game } from '$lib/services/espn'
 import axios from 'axios'
 
 export const SIM_URL = 'https://us-central1-nfl-pickems-5e76c.cloudfunctions.net/simulate'
+// export const SIM_URL = 'http://localhost:8080/simulate'
 export const NUM_SIMS = 5000
 
 export const get: RequestHandler = async ({ query }) => {
@@ -28,11 +29,6 @@ export const get: RequestHandler = async ({ query }) => {
 
     for (const gameId of gameIds) {
         promises.push(getGameInfo(gameId).then((game) => {
-            if (game.teams[game.home].winPct === 1) {
-                game.winner = game.home
-            } else if (game.teams[game.away].winPct === 1) {
-                game.winner = game.away
-            }
             games.push(game)
         }))
     }

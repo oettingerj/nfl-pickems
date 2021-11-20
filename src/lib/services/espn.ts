@@ -90,6 +90,12 @@ export const getGameInfo = async (gameId) => {
         const awayWinPct = 1 - homeWinPct
         gameInfo.teams[gameInfo.home].winPct = homeWinPct
         gameInfo.teams[gameInfo.away].winPct = awayWinPct
+
+        if (homeWinPct === 1) {
+            gameInfo.winner = gameInfo.home
+        } else if (awayWinPct === 1) {
+            gameInfo.winner = gameInfo.away
+        }
     }
 
     return gameInfo

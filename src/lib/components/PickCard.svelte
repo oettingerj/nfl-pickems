@@ -20,7 +20,9 @@
             <Team on:click={() => onWinnerPick(matchup.teams[0].abbr)} team={matchup.teams[0]} picked={matchup.pick === matchup.teams[0].abbr}/>
             <div class="flex flex-col text-center items-center">
                 <span class="text-xl md:text-2xl font-semibold">vs</span>
-                <span class="text-sm w-16 md:text-lg md:w-20 font-medium text-gray-600 mt-3">{matchup.odds}</span>
+                {#if matchup.odds}
+                    <span class="text-sm w-16 md:text-lg md:w-20 font-medium text-gray-600 mt-3">{matchup.odds}</span>
+                {/if}
             </div>
             <Team on:click={() => onWinnerPick(matchup.teams[1].abbr)} team={matchup.teams[1]} picked={matchup.pick === matchup.teams[1].abbr}/>
         </div>

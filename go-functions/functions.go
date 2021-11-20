@@ -2,12 +2,11 @@ package functions
 
 import (
 	"encoding/json"
+	"github.com/gitchander/permutation"
 	"log"
 	"math/rand"
 	"net/http"
 	"sync"
-
-	permutation "github.com/gitchander/permutation"
 )
 
 type Team struct {
@@ -55,7 +54,7 @@ func setUpRequest(r *http.Request, w http.ResponseWriter) {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
-	// Set CORS headers for the main request.
+	// Set CORS headers for the main request
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 }
 
@@ -112,6 +111,8 @@ type RankBody struct {
 	Games []Game `json:"games"`
 	Picks Picks `json:"picks"`
 	User string `json:"user"`
+	NumSims int `json:"num_sims"`
+	NumRanks int `json:"num_ranks"`
 }
 
 type SimResult struct {
@@ -119,9 +120,12 @@ type SimResult struct {
 	picks map[string]Pick
 }
 
-// TODO: Make this function run in a somewhat reasonable time (currently doesn't come close to finishing)
+type RankResponse struct {
+	WinPct float32 `json:"win_pct"`
+	Rankings map[string]int `json:"rankings"`
+}
 
-func autoRank(w http.ResponseWriter, r *http.Request) {
+func AutoRank(w http.ResponseWriter, r *http.Request) {
 	setUpRequest(r, w)
 
 	var body RankBody
@@ -140,90 +144,108 @@ func autoRank(w http.ResponseWriter, r *http.Request) {
 		p++
 	}
 
-	log.Println("Generating permutations...")
-
-	pickPerms := createPermutations(body.Picks, body.User)
-
 	var (
 		mu sync.Mutex
 		results []SimResult
 	)
 
-	results = make([]SimResult, len(pickPerms))
+	results = make([]SimResult, body.NumRanks)
 
 	var wg sync.WaitGroup
-	wg.Add(len(pickPerms))
+	wg.Add(body.NumRanks)
 
-	log.Println("Running simulations...")
+	var pickOptions []int
 
-	for i, picks := range pickPerms {
-		go func (picks Picks, index int) {
+	for i := 1; i <= len(body.Games); i++ {
+		pickOptions = append(pickOptions, i)
+	}
+
+	for i := 0; i < body.NumRanks; i++ {
+		go func (picksArr []int, picks Picks, index int) {
 			defer wg.Done()
-			winPcts := doSimulations(body.Games, picks, players, 1)
+
+			picksArrCopy := make([]int, len(picksArr))
+			copy(picksArrCopy, picksArr)
+
+			picksCopy := copyPicks(picks)
+
+			for _, game := range body.Games {
+				randomIndex := rand.Intn(len(picksArrCopy))
+				weight := picksArrCopy[randomIndex]
+				picksArrCopy = remove(picksArrCopy, randomIndex)
+				picksCopy[body.User][game.Id] = Pick{
+					Pick: picksCopy[body.User][game.Id].Pick,
+					Weight: weight,
+				}
+			}
+
+			winPcts := doSimulations(body.Games, picksCopy, players, body.NumSims)
 			mu.Lock()
 			result := SimResult{
-				picks: picks[body.User],
+				picks: picksCopy[body.User],
 				winPct: winPcts[body.User],
 			}
 			results[index] = result
 			mu.Unlock()
-		}(picks, i)
+		}(pickOptions, body.Picks, i)
 	}
 
 	wg.Wait()
-
-	log.Println("Finding best picks...")
 
 	maxWinPct := float32(0)
 	var bestPicks map[string]Pick
 	for _, result := range results {
 		if result.winPct > maxWinPct {
 			bestPicks = result.picks
+			maxWinPct = result.winPct
 		}
 	}
 
-	log.Println(bestPicks)
+	rankings := make(map[string]int)
+
+	for _, pick := range bestPicks {
+		rankings[pick.Pick] = pick.Weight
+	}
+
+	response := RankResponse{
+		WinPct: maxWinPct,
+		Rankings: rankings,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, err := json.Marshal(response)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Error building response body", http.StatusInternalServerError)
+		return
+	}
+
+	_, err = w.Write(jsonBody)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Error sending response", http.StatusInternalServerError)
+	}
 }
 
-func createPermutations(picks Picks, user string) []Picks {
-	userPicks := picks[user]
-	var picksArr []RankInfo
-	for game, pick := range userPicks {
-		pickInfo := RankInfo{
-			gameId: game,
-			pick: pick.Pick,
-			rank: pick.Weight,
-		}
-		picksArr = append(picksArr, pickInfo)
+func remove(s []int, i int) []int {
+	s[i] = s[len(s)-1]
+	return s[:len(s)-1]
+}
+
+func copyPicks(picks Picks) Picks {
+	pickCopy := make(Picks)
+	for key, val := range picks {
+		pickCopy[key] = copyMap(val)
 	}
+	return pickCopy
+}
 
-	perms := permutation.New(permutation.MustAnySlice(picksArr))
-	var newPicks []Picks
-
-	log.Println("Generated perm array, looping...")
-
-	curr := 0
-	for perms.Next() {
-		log.Println(curr)
-		pickMap := make(map[int]int)
-		for i, pickInfo := range picksArr {
-			pickMap[pickInfo.rank] = i
-		}
-
-		picksPerm := picks
-		for _, pick := range picksArr {
-			existingPick := picksPerm[user][pick.gameId]
-			picksPerm[user][pick.gameId] = Pick{
-				Pick: existingPick.Pick,
-				Weight: pickMap[existingPick.Weight],
-			}
-		}
-
-		newPicks = append(newPicks, picksPerm)
-		curr += 1
+func copyMap(src map[string]Pick) map[string]Pick {
+	pickCopy := make(map[string]Pick)
+	for key, val := range src {
+		pickCopy[key] = val
 	}
-
-	return newPicks
+	return pickCopy
 }
 
 func calculateScores(games []Game, picks Picks, players []string) map[string]int {
@@ -333,4 +355,46 @@ func doSimulation(games []Game, picks Picks, players []string) []string {
 	}
 
 	return winners
+}
+
+// Deprecated: takes way too long to generate permutations
+func createPermutations(picks Picks, user string) []Picks {
+	userPicks := picks[user]
+	var picksArr []RankInfo
+	for game, pick := range userPicks {
+		pickInfo := RankInfo{
+			gameId: game,
+			pick: pick.Pick,
+			rank: pick.Weight,
+		}
+		picksArr = append(picksArr, pickInfo)
+	}
+
+	perms := permutation.New(permutation.MustAnySlice(picksArr))
+	var newPicks []Picks
+
+	log.Println("Generated perm array, looping...")
+
+	curr := 0
+	for perms.Next() {
+		log.Println(curr)
+		pickMap := make(map[int]int)
+		for i, pickInfo := range picksArr {
+			pickMap[pickInfo.rank] = i
+		}
+
+		picksPerm := picks
+		for _, pick := range picksArr {
+			existingPick := picksPerm[user][pick.gameId]
+			picksPerm[user][pick.gameId] = Pick{
+				Pick: existingPick.Pick,
+				Weight: pickMap[existingPick.Weight],
+			}
+		}
+
+		newPicks = append(newPicks, picksPerm)
+		curr += 1
+	}
+
+	return newPicks
 }

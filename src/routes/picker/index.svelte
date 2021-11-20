@@ -27,6 +27,8 @@
             props: {
                 submissionLock,
                 matchups: response.matchups,
+                games: response.games,
+                allPicks: response.allPicks,
                 currentWeek
             }
         }
@@ -34,18 +36,24 @@
 </script>
 
 <script lang="ts">
-    import type { Matchup } from '$lib/services/espn'
+    import type { Game, Matchup } from '$lib/services/espn'
     import Header from '$lib/components/Header.svelte'
     import Button from '$lib/components/Button.svelte'
     import PickCard from '$lib/components/PickCard.svelte'
     import {dndzone, SOURCES} from 'svelte-dnd-action'
     import {flip} from 'svelte/animate'
-    import {submitPicksForUser} from '$lib/services/firebase'
+    import { Picks, submitPicksForUser } from '$lib/services/firebase'
     import {user} from '$lib/stores/user'
+    import { orderBy } from 'lodash-es'
 
     export let submissionLock: number
     export let matchups: Matchup[]
     export let currentWeek: string
+    export let games: Game[]
+    export let allPicks: Picks
+
+    const AUTO_RANK_URL = 'https://us-central1-nfl-pickems-5e76c.cloudfunctions.net/auto_rank'
+    // const AUTO_RANK_URL = 'http://localhost:8080/auto_rank'
 
     let dragDisabled = true
     const flipDurationMs = 200
@@ -65,6 +73,8 @@
     }
 
     let submitting = false
+    let autoRanking = false
+    let winPct
 
     const canSubmit = (picks) => {
         if (Date.now() >= submissionLock) {
@@ -97,6 +107,33 @@
         }
         submitting = false
     }
+
+    const autoRank = async () => {
+        autoRanking = true
+        const body = {
+            games,
+            picks: allPicks,
+            user: $user.id,
+            num_sims: 1000,
+            num_ranks: 1000
+        }
+
+        const response = await fetch(AUTO_RANK_URL, {
+            method: 'POST',
+            body: JSON.stringify(body)
+        }).then(res => res.json())
+
+        const rankings = response.rankings
+
+        for (const matchup of matchups) {
+            matchup.weight = rankings[matchup.pick]
+        }
+
+        matchups = orderBy(matchups, 'weight', 'desc')
+        winPct = response.win_pct
+
+        autoRanking = false
+    }
 </script>
 
 <svelte:window bind:innerWidth={screenWidth}/>
@@ -126,8 +163,12 @@
             <h2 class="text-2xl mt-5 font-medium text-center">Least Confident</h2>
         </div>
         {#if screenWidth >= 768}
-            <div class="mr-10">
-                <Button loading={submitting} disabled={!canSubmit(matchups)} size="xl" class="mt-10" on:click={submitPicks}>Submit</Button>
+            <div class="flex flex-col items-center mr-10 mt-10">
+                <Button loading={submitting} disabled={!canSubmit(matchups)} size="xl" class="mb-3" on:click={submitPicks}>Submit</Button>
+<!--                <Button loading={autoRanking} theme="secondary" on:click={autoRank}>Auto-Rank</Button>-->
+                {#if winPct}
+                    <div class="border text-sm text-gray-600 border-gray-300 rounded-lg mt-3 p-3 text-center">Estimated win: {Math.round(winPct * 100)}%</div>
+                {/if}
             </div>
         {/if}
     </div>
