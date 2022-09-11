@@ -2,10 +2,8 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 const colors = require('tailwindcss/colors')
 
 const config = {
-	mode: "jit",
-	purge: [
-		"./src/**/*.{html,js,svelte,ts}",
-	],
+	mode: 'jit',
+	purge: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
 		extend: {
 			fontFamily: {
@@ -15,13 +13,11 @@ const config = {
 				base: colors.indigo
 			},
 			screens: {
-				'desktop': {raw: '(hover: hover)'}
+				desktop: { raw: '(hover: hover)' }
 			}
 		}
 	},
-	plugins: [
-		require('@tailwindcss/typography')
-	]
+	plugins: [require('@tailwindcss/typography')]
 }
 
 module.exports = config
