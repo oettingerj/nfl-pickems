@@ -1,5 +1,4 @@
 <script lang="ts">
-	import classNames from 'classnames'
 	import { uniqueId } from 'lodash-es'
 
 	export let label = ''
@@ -7,6 +6,8 @@
 	export let value
 	export let onSubmit: () => void
 	export let inputClass = ''
+	let className
+	export { className as class }
 
 	const id = uniqueId('input_')
 
@@ -18,13 +19,13 @@
 	}
 </script>
 
-<div class={$$restProps.class}>
+<div class={className}>
 	{#if label.length > 0}
 		<label for={id} class="block text-sm font-medium text-gray-700"
 			>{label}</label
 		>
 	{/if}
-	<div class={classNames('relative rounded-md shadow-sm', label ? 'mt-1' : '')}>
+	<div class="relative rounded-md shadow-sm {label ? 'mt-1' : ''}">
 		{#if $$slots.icon}
 			<div
 				class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"

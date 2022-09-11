@@ -7,12 +7,11 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"start": "node build",
 		"prepare": "husky install",
 		"format": "eslint --fix && prettier --write ."
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-node": "^1.0.0-next.89",
+		"@sveltejs/adapter-vercel": "^1.0.0-next.73",
 		"@sveltejs/kit": "1.0.0-next.480",
 		"@tailwindcss/typography": "^0.5.7",
 		"@types/lodash-es": "^4.17.6",
@@ -37,7 +36,6 @@
 	},
 	"dependencies": {
 		"axios": "^0.27.2",
-		"classnames": "^2.3.1",
 		"firebase": "^9.9.4",
 		"lodash-es": "^4.17.21",
 		"luxon": "^3.0.3",

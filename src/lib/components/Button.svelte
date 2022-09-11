@@ -1,11 +1,11 @@
 <script lang="ts">
-	import classNames from 'classnames'
-
 	export let theme: 'primary' | 'secondary' | 'white' = 'primary'
 	export let size: 'sm' | 'md' | 'lg' | 'xl' = 'md'
 	export let selected = false
 	export let disabled = false
 	export let loading = false
+	let className
+	export { className as class }
 
 	const themes = {
 		primary:
@@ -35,12 +35,9 @@
 {#if !loading}
 	<button
 		{disabled}
-		class={classNames(
-			basicClasses,
-			selected ? selectedThemes[theme] : themes[theme],
-			sizes[size],
-			$$restProps.class
-		)}
+		class="{basicClasses} {selected
+			? selectedThemes[theme]
+			: themes[theme]} {sizes[size]} {className}"
 		on:click
 	>
 		{#if $$slots.icon}
@@ -53,12 +50,9 @@
 {:else}
 	<button
 		disabled
-		class={classNames(
-			basicClasses,
-			selected ? selectedThemes[theme] : themes[theme],
-			sizes[size],
-			$$restProps.class
-		)}
+		class="{basicClasses} {selected
+			? selectedThemes[theme]
+			: themes[theme]} {sizes[size]} {className}"
 	>
 		<svg
 			class="animate-spin h-5 w-5"

@@ -1,16 +1,16 @@
 <script lang="ts">
-	import classNames from 'classnames'
-
 	export let rounded = true
 	export let shadow = true
 	export let headerBgClass = ''
 	export let noPadding = false
+	let className
+	export { className as class }
 
 	const hasHeader = Object.hasOwn($$slots, 'header')
 </script>
 
 <div
-	class={classNames('bg-white overflow-hidden border', $$restProps.class)}
+	class="bg-white overflow-hidden border {className}"
 	class:rounded-lg={rounded}
 	class:shadow-lg={shadow}
 	class:divide-y={hasHeader}

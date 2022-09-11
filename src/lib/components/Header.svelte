@@ -2,13 +2,15 @@
 	import { user } from '$lib/stores/user'
 	import { logOut, setDisplayName } from '$lib/services/firebase'
 	import { goto } from '$app/navigation'
-	import classNames from 'classnames'
 
 	import Button from '$lib/components/Button.svelte'
 	import Dropdown from '$lib/components/dropdown/Dropdown.svelte'
 	import DropdownRow from '$lib/components/dropdown/Row.svelte'
 	import Modal from '$lib/components/Modal.svelte'
 	import TextInput from '$lib/components/TextInput.svelte'
+
+	let className
+	export { className as class }
 
 	let showDropdown = false
 	let showDisplayNameModal = false
@@ -50,10 +52,7 @@
 <svelte:window on:click={() => (showDropdown = false)} />
 
 <div
-	class={classNames(
-		'relative flex flex-row items-center justify-between bg-base-600 py-0 px-4',
-		$$restProps.class
-	)}
+	class="relative flex flex-row items-center justify-between bg-base-600 py-0 px-4 {className}"
 >
 	<div class="flex flex-row items-center">
 		<img

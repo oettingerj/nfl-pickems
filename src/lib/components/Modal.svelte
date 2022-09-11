@@ -1,6 +1,4 @@
 <script lang="ts">
-	import classNames from 'classnames'
-
 	export let bgOverlay = false
 	export let visible: boolean
 	export let onHide: () => void
@@ -15,20 +13,15 @@
 
 {#if visible}
 	<div
-		class={classNames(
-			'z-10',
-			anchored ? 'absolute' : 'fixed inset-0',
-			outerClass
-		)}
+		class="z-10 {anchored ? 'absolute' : 'fixed inset-0'} {outerClass}"
 		role="dialog"
 		aria-modal="true"
 		on:click|stopPropagation
 	>
 		<div
-			class={classNames(
-				'flex items-end justify-center pt-4 px-4 pb-20 text-center sm:block sm:p-0',
-				anchored ? '' : 'min-h-screen'
-			)}
+			class="flex items-end justify-center pt-4 px-4 pb-20 text-center sm:block sm:p-0 {anchored
+				? ''
+				: 'min-h-screen'}"
 		>
 			{#if bgOverlay}
 				<div
@@ -47,10 +40,7 @@
 			{/if}
 
 			<div
-				class={classNames(
-					'inline-block border align-bottom bg-white p-4 text-left rounded-lg transform shadow-xl sm:align-middle sm:max-w-lg sm:w-full',
-					innerClass
-				)}
+				class="inline-block border align-bottom bg-white p-4 text-left rounded-lg transform shadow-xl sm:align-middle sm:max-w-lg sm:w-full {innerClass}"
 			>
 				<div class="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
 					<button
