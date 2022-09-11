@@ -1,3 +1,4 @@
+import { json } from '@sveltejs/kit'
 import type { RequestHandler } from '@sveltejs/kit'
 import { getPicks, getGameIds, getPlayers } from '$lib/services/firebase'
 import type { Picks } from '$lib/services/firebase'
@@ -50,13 +51,11 @@ export const GET: RequestHandler = async ({ url }) => {
 		numSims: NUM_SIMS
 	})
 
-	return {
-		body: {
-			games,
-			picks,
-			players,
-			winPcts: response.data.winPcts,
-			scores: response.data.scores
-		}
-	}
+	return json({
+		games,
+		picks,
+		players,
+		winPcts: response.data.winPcts,
+		scores: response.data.scores
+	})
 }

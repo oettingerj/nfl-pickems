@@ -1,11 +1,12 @@
+import { json } from '@sveltejs/kit'
 import type { RequestHandler } from '@sveltejs/kit'
-import { Game, getGameInfo, getMatchups } from '$lib/services/espn'
+import { type Game, getGameInfo, getMatchups } from '$lib/services/espn'
 import {
 	getGameIds,
 	getPicks,
 	getPicksForUser,
 	hasGame,
-	Picks,
+	type Picks,
 	setGames
 } from '$lib/services/firebase'
 import { orderBy } from 'lodash-es'
@@ -56,11 +57,9 @@ export const GET: RequestHandler = async ({ url }) => {
 		matchups = orderBy(matchups, 'weight', 'desc')
 	}
 
-	return {
-		body: {
-			matchups,
-			games,
-			allPicks
-		}
-	}
+	return json({
+		matchups,
+		games,
+		allPicks
+	})
 }

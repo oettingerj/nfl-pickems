@@ -1,40 +1,3 @@
-<script context="module" lang="ts">
-	import type { Load } from '@sveltejs/kit'
-	import { getSubmissionLock, getWeeks } from '$lib/services/firebase'
-
-	export const load: Load = async ({ fetch, page }) => {
-		const weeks = await getWeeks()
-		const currentWeek = weeks[weeks.length - 1]
-		const submissionLock = await getSubmissionLock(currentWeek)
-		if (Date.now() >= submissionLock) {
-			return {
-				props: {
-					submissionLock
-				}
-			}
-		}
-
-		const query = page.query
-
-		let url = `/api/picker_data?week=${currentWeek}`
-		if (query.has('uid')) {
-			url = url.concat(`&uid=${query.get('uid')}`)
-		}
-
-		const response = await fetch(url).then((res) => res.json())
-
-		return {
-			props: {
-				submissionLock,
-				matchups: response.matchups,
-				games: response.games,
-				allPicks: response.allPicks,
-				currentWeek
-			}
-		}
-	}
-</script>
-
 <script lang="ts">
 	import type { Game, Matchup } from '$lib/services/espn'
 	import Header from '$lib/components/Header.svelte'
@@ -46,11 +9,15 @@
 	import { user } from '$lib/stores/user'
 	import { orderBy } from 'lodash-es'
 
-	export let submissionLock: number
-	export let matchups: Matchup[]
-	export let currentWeek: string
-	export let games: Game[]
-	export let allPicks: Picks
+	export let data: {
+		submissionLock: number
+		matchups: Matchup[]
+		currentWeek: string
+		games: Game[]
+		allPicks: Picks
+	}
+
+	let { submissionLock, matchups, currentWeek, games, allPicks } = data
 
 	const AUTO_RANK_URL =
 		'https://us-central1-nfl-pickems-5e76c.cloudfunctions.net/auto_rank'

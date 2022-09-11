@@ -1,53 +1,5 @@
-<script lang="ts" context="module">
-	import type { Load } from '@sveltejs/kit'
-	import { getSubmissionLock, getWeeks } from '$lib/services/firebase'
-	import { DateTime } from 'luxon'
-
-	export const load: Load = async ({ fetch, url }) => {
-		const weeks = await getWeeks()
-		const currentWeek = weeks[weeks.length - 1]
-		let selectedWeek = url.searchParams.get('week')
-		const submissionLock = await getSubmissionLock(currentWeek)
-		const areSubmissionsLocked = Date.now() >= submissionLock
-		if (
-			(!selectedWeek && !areSubmissionsLocked) ||
-			(!areSubmissionsLocked && selectedWeek === currentWeek)
-		) {
-			return {
-				props: {
-					weeks,
-					currentWeek,
-					areSubmissionsLocked,
-					lockTime: DateTime.fromMillis(submissionLock)
-				}
-			}
-		}
-
-		if (!selectedWeek) {
-			selectedWeek = currentWeek
-		}
-
-		const response = await fetch(`/api/results?week=${selectedWeek}`).then(
-			(res) => res.json()
-		)
-
-		return {
-			props: {
-				weeks,
-				currentWeek,
-				selectedWeek,
-				areSubmissionsLocked,
-				games: response.games,
-				picks: response.picks,
-				winPcts: response.winPcts,
-				scores: response.scores,
-				players: response.players
-			}
-		}
-	}
-</script>
-
 <script lang="ts">
+	import { DateTime } from 'luxon'
 	import type { Game } from '$lib/services/espn'
 	import type { Picks } from '$lib/services/firebase'
 	import Header from '$lib/components/Header.svelte'
@@ -59,21 +11,34 @@
 	import { NUM_SIMS, SIM_URL } from './api/results'
 	import { hasPicks } from '$lib/services/firebase'
 
-	export let areSubmissionsLocked: boolean
-	export let lockTime: DateTime
+	export let data: {
+		areSubmissionsLocked: boolean
+		lockTime: DateTime
+		games: Game[]
+		picks: Picks
+		winPcts: object
+		scores: object
+		players: {
+			name: string
+			id: string
+		}[]
+		weeks: string[]
+		currentWeek: string
+		selectedWeek: string
+	}
 
-	export let games: Game[]
-	export let picks: Picks
-	export let winPcts: {}
-	export let scores: {}
-	export let players: {
-		name: string
-		id: string
-	}[] = []
-	export let weeks: string[]
-	export let currentWeek: string
-	export let selectedWeek: string
-
+	let {
+		areSubmissionsLocked,
+		lockTime,
+		games,
+		players,
+		picks,
+		scores,
+		selectedWeek,
+		weeks,
+		currentWeek,
+		winPcts
+	} = data
 	let teamColumnWidth = 200
 	let screenWidth = 600
 
