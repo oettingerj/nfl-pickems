@@ -8,7 +8,7 @@
 	import Button from '$lib/components/Button.svelte'
 	import { goto } from '$app/navigation'
 	import { has } from 'lodash-es'
-	import { NUM_SIMS, SIM_URL } from './api/results'
+	import { NUM_SIMS, SIM_URL } from './api/results/+server'
 	import { hasPicks } from '$lib/services/firebase'
 
 	export let data: {

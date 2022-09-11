@@ -5,7 +5,7 @@
 	import PickCard from '$lib/components/PickCard.svelte'
 	import { dndzone, SOURCES, type DndEvent } from 'svelte-dnd-action'
 	import { flip } from 'svelte/animate'
-	import { Picks, submitPicksForUser } from '$lib/services/firebase'
+	import { type Picks, submitPicksForUser } from '$lib/services/firebase'
 	import { user } from '$lib/stores/user'
 	import { orderBy } from 'lodash-es'
 
