@@ -1,7 +1,9 @@
 import type { PageLoad } from './$types'
 import { getSubmissionLock, getWeeks } from '$lib/services/firebase'
 
-export const load: PageLoad = async ({ fetch, url }) => {
+export const load: PageLoad = async ({ fetch, url, parent }) => {
+	await parent()
+
 	const weeks = await getWeeks()
 	const currentWeek = weeks[weeks.length - 1]
 	const submissionLock = await getSubmissionLock(currentWeek)

@@ -2,7 +2,9 @@ import type { PageLoad } from './$types'
 import { getSubmissionLock, getWeeks } from '$lib/services/firebase'
 import { DateTime } from 'luxon'
 
-export const load: PageLoad = async ({ fetch, url }) => {
+export const load: PageLoad = async ({ fetch, url, parent }) => {
+	await parent()
+
 	const weeks = await getWeeks()
 	const currentWeek = weeks[weeks.length - 1]
 	let selectedWeek = url.searchParams.get('week')
