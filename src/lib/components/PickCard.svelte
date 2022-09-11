@@ -5,6 +5,8 @@
 
 	export let matchup: Matchup
 	export let onWinnerPick: (pick: string) => void
+	let className
+	export { className as class }
 
 	export let dragDisabled: boolean
 
@@ -14,7 +16,7 @@
 	}
 </script>
 
-<Card noPadding class={$$restProps.class}>
+<Card noPadding class={className}>
 	<div class="flex justify-between text-gray-800">
 		<div class="flex flex-grow justify-around items-center md:p-3">
 			<Team
