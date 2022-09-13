@@ -27,10 +27,9 @@
 			<div class="flex flex-col text-center items-center">
 				<span class="text-xl md:text-2xl font-semibold">vs</span>
 				{#if matchup.odds}
-					<span
-						class="text-sm w-16 md:text-lg md:w-20 font-medium text-gray-600 mt-3"
-						>{matchup.odds}</span
-					>
+					<span class="text-sm w-16 md:text-lg md:w-20 text-gray-500 mt-3">
+						{matchup.odds}
+					</span>
 				{/if}
 			</div>
 			<Team

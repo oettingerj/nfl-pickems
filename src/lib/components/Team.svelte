@@ -13,4 +13,5 @@
 >
 	<img class="md:w-20" src={team.logo} alt="team logo" />
 	<h3 class="font-medium text-lg">{team.abbr}</h3>
+	<span class="text-sm text-gray-500">{team.record}</span>
 </div>

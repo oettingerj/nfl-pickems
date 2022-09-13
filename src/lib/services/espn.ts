@@ -24,6 +24,7 @@ export type Matchup = {
 		abbr: string
 		color: string
 		logo: string
+		record: string
 	}[]
 	pick?: string
 	weight?: number
@@ -38,12 +39,12 @@ export const getMatchups = async (week) => {
 		const teams = game.competitions[0].competitors
 		const teamData = []
 		for (let team of teams) {
-			team = team.team
 			teamData.push({
-				name: team.name,
-				abbr: team.abbreviation,
-				color: team.color,
-				logo: team.logo
+				name: team.team.name,
+				abbr: team.team.abbreviation,
+				color: team.team.color,
+				logo: team.team.logo,
+				record: team.records.find((rec) => rec.type === 'total').summary
 			})
 		}
 

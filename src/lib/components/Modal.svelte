@@ -3,17 +3,13 @@
 	export let visible: boolean
 	export let onHide: () => void
 	export let anchored = false
-	// Outer = wrapper div
-	export let outerClass = ''
-	// Inner = modal content
-	export let innerClass = ''
 </script>
 
 <svelte:window on:click={onHide} />
 
 {#if visible}
 	<div
-		class="z-10 {anchored ? 'absolute' : 'fixed inset-0'} {outerClass}"
+		class="z-10 {anchored ? 'absolute' : 'fixed inset-0'}"
 		role="dialog"
 		aria-modal="true"
 		on:click|stopPropagation
@@ -40,7 +36,7 @@
 			{/if}
 
 			<div
-				class="inline-block border align-bottom bg-white p-4 text-left rounded-lg transform shadow-xl sm:align-middle sm:max-w-lg sm:w-full {innerClass}"
+				class="inline-block border align-bottom bg-white p-4 text-left rounded-lg transform shadow-xl sm:align-middle sm:max-w-lg sm:w-full"
 			>
 				<div class="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
 					<button
