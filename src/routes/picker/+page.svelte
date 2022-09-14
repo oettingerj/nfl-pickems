@@ -80,7 +80,6 @@
 		submitting = false
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const autoRank = async () => {
 		autoRanking = true
 		const body = {
@@ -160,14 +159,25 @@
 					disabled={!canSubmit(matchups)}
 					size="xl"
 					class="mb-3"
-					on:click={submitPicks}>Submit</Button
+					on:click={submitPicks}
 				>
-				<!--                <Button loading={autoRanking} theme="secondary" on:click={autoRank}>Auto-Rank</Button>-->
+					Submit
+				</Button>
+				{#if $user.canAutoRank}
+					<Button
+						class="whitespace-nowrap"
+						loading={autoRanking}
+						theme="secondary"
+						on:click={autoRank}
+					>
+						Auto-Rank
+					</Button>
+				{/if}
 				{#if winPct}
 					<div
 						class="border text-sm text-gray-600 border-gray-300 rounded-lg mt-3 p-3 text-center"
 					>
-						Estimated win: {Math.round(winPct * 100)}%
+						Estimated win %: {Math.round(winPct * 100)}%
 					</div>
 				{/if}
 			</div>

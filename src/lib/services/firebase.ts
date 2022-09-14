@@ -38,6 +38,7 @@ export type FirebaseUser = {
 	id: string
 	displayName?: string
 	email: string
+	canAutoRank?: boolean
 }
 
 const firebaseConfig = {
@@ -61,10 +62,10 @@ export const getUser = async (uid) => {
 export const isLoggedIn = () => {
 	const auth = getAuth()
 	return new Promise((resolve) => {
-		const unsubscribe = onAuthStateChanged(auth, (u) => {
+		const unsubscribe = onAuthStateChanged(auth, async (u) => {
 			unsubscribe()
 			if (u) {
-				getUser(u.uid).then((us) => user.set(us))
+				await getUser(u.uid).then((us) => user.set(us))
 				resolve(true)
 			} else {
 				resolve(false)

@@ -1,5 +1,8 @@
 import type { PageLoad } from './$types'
 import { getSubmissionLock, getWeeks } from '$lib/services/firebase'
+import { user } from '$lib/stores/user'
+import { get } from 'svelte/store'
+import { redirect } from '@sveltejs/kit'
 
 export const load: PageLoad = async ({ fetch, url, parent }) => {
 	await parent()
@@ -17,7 +20,12 @@ export const load: PageLoad = async ({ fetch, url, parent }) => {
 
 	let apiUrl = `/api/picker_data?week=${currentWeek}`
 	if (query.has('uid')) {
-		apiUrl = apiUrl.concat(`&uid=${query.get('uid')}`)
+		const uid = query.get('uid')
+		if (uid !== get(user).id) {
+			throw redirect(307, '/')
+		} else {
+			apiUrl = apiUrl.concat(`&uid=${query.get('uid')}`)
+		}
 	}
 
 	const response = await fetch(apiUrl).then((res) => res.json())

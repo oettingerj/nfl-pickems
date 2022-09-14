@@ -6,5 +6,6 @@ export const user: Writable<FirebaseUser> = writable({
 	name: null,
 	email: null,
 	photoURL: null,
-	id: null
+	id: null,
+	canAutoRank: false
 })
