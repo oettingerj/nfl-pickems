@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { DateTime } from 'luxon'
+	import type { DateTime } from 'luxon'
 	import type { Game } from '$lib/services/espn'
-	import type { Picks } from '$lib/services/firebase'
+	import type { FirebaseUser, Picks } from '$lib/services/firebase'
 	import Header from '$lib/components/Header.svelte'
 	import { user } from '$lib/stores/user'
 	import Card from '$lib/components/Card.svelte'
@@ -25,6 +25,10 @@
 		weeks: string[]
 		currentWeek: string
 		selectedWeek: string
+		submissions: {
+			submissionCount: number
+			users: FirebaseUser[]
+		}
 	}
 
 	let {
@@ -37,7 +41,8 @@
 		selectedWeek,
 		weeks,
 		currentWeek,
-		winPcts
+		winPcts,
+		submissions
 	} = data
 	let teamColumnWidth = 200
 	let screenWidth = 600
@@ -124,14 +129,16 @@
 <div class="flex h-screen w-screen flex-col text-gray-800">
 	<Header />
 	{#if !selectedWeek}
-		<div class="flex flex-col items-center">
-			<Card class="p-10 mx-5 mt-20">
+		<div
+			class="flex flex-col sm:flex-row gap-5 mx-5 items-center justify-around mt-20"
+		>
+			<Card class="p-10">
 				<h3 class="text-2xl font-medium">Time to make your picks!</h3>
 				<p class="mt-3">
 					Picks lock for the week on {lockTimeString}. After this time, you will
 					be able to see everyone's picks and odds.
 				</p>
-				<div class="flex mt-6 items-center">
+				<div class="flex mt-6 gap-2 items-center">
 					<Button
 						size="lg"
 						on:click={() =>
@@ -142,12 +149,23 @@
 						loading={updatingWeek}
 						size="lg"
 						theme="secondary"
-						class="ml-2"
 						on:click={() => changeWeek(parseInt(currentWeek) - 1)}
 						>View Previous Weeks</Button
 					>
 				</div>
 			</Card>
+			<div
+				class="text-white bg-gray-600 cursor-default rounded-lg p-5 flex flex-col gap-2"
+			>
+				<span class="text-sm uppercase font-semibold">
+					Players with picks in
+				</span>
+				<ul class="flex flex-col gap-1">
+					{#each submissions.users as user}
+						<li class="text-sm font-medium">{user.displayName}</li>
+					{/each}
+				</ul>
+			</div>
 		</div>
 	{:else}
 		<div class="flex sm:flex-row items-center flex-col md:mx-20 mx-5 mb-5">

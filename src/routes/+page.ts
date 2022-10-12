@@ -1,5 +1,9 @@
 import type { PageLoad } from './$types'
-import { getSubmissionLock, getWeeks } from '$lib/services/firebase'
+import {
+	getSubmissionLock,
+	getSubmissions,
+	getWeeks
+} from '$lib/services/firebase'
 import { DateTime } from 'luxon'
 
 export const load: PageLoad = async ({ fetch, url, parent }) => {
@@ -14,10 +18,13 @@ export const load: PageLoad = async ({ fetch, url, parent }) => {
 		(!selectedWeek && !areSubmissionsLocked) ||
 		(!areSubmissionsLocked && selectedWeek === currentWeek)
 	) {
+		const submissions = await getSubmissions(currentWeek)
+
 		return {
 			weeks,
 			currentWeek,
 			areSubmissionsLocked,
+			submissions,
 			lockTime: DateTime.fromMillis(submissionLock)
 		}
 	}

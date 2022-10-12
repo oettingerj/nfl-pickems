@@ -3,7 +3,7 @@
 	export let shadow = true
 	export let headerBgClass = ''
 	export let noPadding = false
-	let className
+	let className = ''
 	export { className as class }
 
 	const hasHeader = Object.hasOwn($$slots, 'header')

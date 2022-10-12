@@ -1,5 +1,7 @@
 <script lang="ts">
-	export let team
+	import type { Team } from '$lib/services/espn'
+
+	export let team: Team
 	export let picked = false
 
 	const selectedStyles = 'border-green-300 shadow bg-green-50'

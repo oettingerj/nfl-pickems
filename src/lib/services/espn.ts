@@ -3,7 +3,7 @@ import { DateTime } from 'luxon'
 
 const BASE_URL = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl'
 
-export type Game = {
+export interface Game {
 	id: string
 	home: string
 	away: string
@@ -16,16 +16,18 @@ export type Game = {
 	winner?: string
 }
 
-export type Matchup = {
+export interface Team {
+	name: string
+	abbr: string
+	color: string
+	logo: string
+	record: string
+}
+
+export interface Matchup {
 	id: string
 	odds: string
-	teams: {
-		name: string
-		abbr: string
-		color: string
-		logo: string
-		record: string
-	}[]
+	teams: Team[]
 	pick?: string
 	weight?: number
 }

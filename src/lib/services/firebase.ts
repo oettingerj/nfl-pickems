@@ -90,6 +90,32 @@ export const getWeeks = async () => {
 		.map((id) => id.toString())
 }
 
+export const getSubmissions = async (week: string) => {
+	const db = getFirestore()
+	const snapshot = await getDocs(collection(db, 'weeks', week, 'games'))
+
+	if (snapshot.docs.length === 0) {
+		return {
+			submissionCount: 0,
+			users: []
+		}
+	} else {
+		const picks = await getDocs(collection(snapshot.docs[0].ref, 'picks'))
+		const users = await getDocs(collection(db, 'players'))
+		const submittedUsers = []
+
+		picks.docs.forEach((userDoc) => {
+			const user = users.docs.find((doc) => doc.id === userDoc.id)
+			if (user) submittedUsers.push(user.data())
+		})
+
+		return {
+			submissionCount: picks.docs.length,
+			users: submittedUsers
+		}
+	}
+}
+
 export const logOut = async () => {
 	const auth = getAuth()
 	return await signOut(auth)

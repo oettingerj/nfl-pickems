@@ -5,7 +5,7 @@
 
 	export let matchup: Matchup
 	export let onWinnerPick: (pick: string) => void
-	let className
+	let className = ''
 	export { className as class }
 
 	export let dragDisabled: boolean

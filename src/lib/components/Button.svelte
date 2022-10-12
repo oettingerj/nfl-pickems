@@ -4,7 +4,7 @@
 	export let selected = false
 	export let disabled = false
 	export let loading = false
-	let className
+	let className = ''
 	export { className as class }
 
 	const themes = {

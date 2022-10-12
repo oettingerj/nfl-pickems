@@ -3,10 +3,10 @@
 
 	export let label = ''
 	export let placeholder = ''
-	export let value
+	export let value: string
 	export let onSubmit: () => void
 	export let inputClass = ''
-	let className
+	let className = ''
 	export { className as class }
 
 	const id = uniqueId('input_')

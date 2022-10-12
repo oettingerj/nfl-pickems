@@ -9,7 +9,7 @@
 	import Modal from '$lib/components/Modal.svelte'
 	import TextInput from '$lib/components/TextInput.svelte'
 
-	let className
+	let className = ''
 	export { className as class }
 
 	let showDropdown = false
