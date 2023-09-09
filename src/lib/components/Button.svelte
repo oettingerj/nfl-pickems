@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let theme: 'primary' | 'secondary' | 'white' = 'primary'
+	export let theme: 'primary' | 'secondary' | 'white' | 'none' = 'primary'
 	export let size: 'sm' | 'md' | 'lg' | 'xl' = 'md'
 	export let selected = false
 	export let disabled = false

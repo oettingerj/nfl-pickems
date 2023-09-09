@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let bgOverlay = false
 	export let visible: boolean
-	export let onHide: () => void
+	export let onHide: (_?: MouseEvent) => void
 	export let anchored = false
 </script>
 
@@ -31,8 +31,10 @@
 			{#if !anchored}
 				<span
 					class="hidden sm:inline-block sm:align-middle sm:h-screen"
-					aria-hidden="true">&#8203;</span
+					aria-hidden="true"
 				>
+					&#8203;
+				</span>
 			{/if}
 
 			<div

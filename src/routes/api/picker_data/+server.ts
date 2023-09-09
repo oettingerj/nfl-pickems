@@ -9,7 +9,6 @@ import {
 	type Picks,
 	setGames
 } from '$lib/services/firebase'
-import { orderBy } from 'lodash-es'
 
 export const GET: RequestHandler = async ({ url }) => {
 	const week = url.searchParams.get('week')
@@ -54,7 +53,11 @@ export const GET: RequestHandler = async ({ url }) => {
 			}
 		}
 
-		matchups = orderBy(matchups, 'weight', 'desc')
+		matchups = matchups.sort((a, b) => {
+			if (a.weight > b.weight) return 1
+			if (a.weight < b.weight) return -1
+			return 0
+		})
 	}
 
 	return json({

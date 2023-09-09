@@ -1,35 +1,14 @@
 <script lang="ts">
-	import type { DateTime } from 'luxon'
-	import type { Game } from '$lib/services/espn'
-	import type { FirebaseUser, Picks } from '$lib/services/firebase'
 	import Header from '$lib/components/Header.svelte'
-	import { user } from '$lib/stores/user'
 	import Card from '$lib/components/Card.svelte'
 	import Button from '$lib/components/Button.svelte'
 	import { goto } from '$app/navigation'
-	import { has } from 'lodash-es'
-	import { NUM_SIMS, SIM_URL } from './api/results/+server'
+	import { NUM_SIMS, SIM_URL } from '$lib/constants/simulation'
 	import { hasPicks } from '$lib/services/firebase'
+	import { user } from '$lib/stores/user'
+	import type { PageData } from './$types'
 
-	export let data: {
-		areSubmissionsLocked: boolean
-		lockTime: DateTime
-		games: Game[]
-		picks: Picks
-		winPcts: object
-		scores: object
-		players: {
-			name: string
-			id: string
-		}[]
-		weeks: string[]
-		currentWeek: string
-		selectedWeek: string
-		submissions: {
-			submissionCount: number
-			users: FirebaseUser[]
-		}
-	}
+	export let data: PageData
 
 	let {
 		areSubmissionsLocked,
@@ -48,7 +27,7 @@
 	let screenWidth = 600
 
 	$: if (players) {
-		players = players.filter((p) => has(picks, p.id))
+		players = players.filter((p) => Object.hasOwn(picks, p.id))
 	}
 
 	if (!areSubmissionsLocked) {
@@ -57,7 +36,7 @@
 
 	let lockTimeString
 	if (lockTime) {
-		lockTimeString = lockTime.toFormat('ccc LLL d \'at\' h:mm\'pm\'')
+		lockTimeString = lockTime.toFormat("ccc LLL d 'at' h:mm'pm'")
 	}
 
 	let madePicks = false
@@ -143,15 +122,17 @@
 						size="lg"
 						on:click={() =>
 							goto(`/picker${$user.id ? `?uid=${$user.id}` : ''}`)}
-						>{madePicks ? 'Edit' : 'Make'} Picks</Button
 					>
+						{madePicks ? 'Edit' : 'Make'} Picks
+					</Button>
 					<Button
 						loading={updatingWeek}
 						size="lg"
 						theme="secondary"
 						on:click={() => changeWeek(parseInt(currentWeek) - 1)}
-						>View Previous Weeks</Button
 					>
+						View Previous Weeks
+					</Button>
 				</div>
 			</Card>
 			<div
@@ -175,9 +156,9 @@
 			>
 				<div class="flex flex-col sm:mb-2 items-center w-full">
 					{#if !updatingWeek}
-						<label for="week" class="block text-sm font-medium text-gray-700"
-							>Week</label
-						>
+						<label for="week" class="block text-sm font-medium text-gray-700">
+							Week
+						</label>
 						<select
 							bind:value={selectedWeek}
 							on:change={() => changeWeek(selectedWeek)}
@@ -211,9 +192,9 @@
 									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 								/>
 							</svg>
-							<span class="text-xs w-20 text-gray-600 ml-2"
-								>Fetching data for week {selectedWeek}...</span
-							>
+							<span class="text-xs w-20 text-gray-600 ml-2">
+								Fetching data for week {selectedWeek}...
+							</span>
 						</div>
 					{/if}
 				</div>
@@ -242,9 +223,9 @@
 							</svg>
 						</Button>
 					{:else}
-						<Button class="h-12 w-32" on:click={runSimulation} size="lg"
-							>Re-simulate</Button
-						>
+						<Button class="h-12 w-32" on:click={runSimulation} size="lg">
+							Re-simulate
+						</Button>
 					{/if}
 				</div>
 			</div>
@@ -261,8 +242,9 @@
 								{#each players as player}
 									<th
 										class="px-3 md:px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
-										>{player.shortName}</th
 									>
+										{player.shortName}
+									</th>
 								{/each}
 							</tr>
 						</thead>
@@ -291,17 +273,20 @@
 						<th
 							bind:clientWidth={teamColumnWidth}
 							class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider"
-							>Home</th
 						>
+							Home
+						</th>
 						<th
 							class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider"
-							>Away</th
 						>
-						{#each players as player, i}
+							Away
+						</th>
+						{#each players as player}
 							<th
 								class="px-3 md:px-6 py-3 sticky top-0 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider"
-								>{player.shortName}</th
 							>
+								{player.shortName}
+							</th>
 						{/each}
 					</tr>
 				</thead>
@@ -317,9 +302,9 @@
 							>
 								<div class="flex flex-col items-center">
 									<span class="font-medium">{game.home}</span>
-									<span class="text-sm font-light"
-										>{Math.round(game.teams[game.home].winPct * 100)}%</span
-									>
+									<span class="text-sm font-light">
+										{Math.round(game.teams[game.home].winPct * 100)}%
+									</span>
 								</div>
 							</td>
 							<td
@@ -331,9 +316,9 @@
 							>
 								<div class="flex flex-col items-center">
 									<span class="font-medium">{game.away}</span>
-									<span class="text-sm font-light"
-										>{Math.round(game.teams[game.away].winPct * 100)}%</span
-									>
+									<span class="text-sm font-light">
+										{Math.round(game.teams[game.away].winPct * 100)}%
+									</span>
 								</div>
 							</td>
 							{#each players as player}
@@ -343,12 +328,12 @@
 										game
 									)}"
 								>
-									<span class="font-medium"
-										>{picks[player.id][game.id].pick}</span
-									>
-									<span class="text-xs"
-										>({picks[player.id][game.id].weight})</span
-									>
+									<span class="font-medium">
+										{picks[player.id][game.id].pick}
+									</span>
+									<span class="text-xs">
+										({picks[player.id][game.id].weight})
+									</span>
 								</td>
 							{/each}
 						</tr>

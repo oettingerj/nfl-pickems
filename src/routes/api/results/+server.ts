@@ -5,11 +5,7 @@ import type { Picks } from '$lib/services/firebase'
 import { getGameInfo } from '$lib/services/espn'
 import type { Game } from '$lib/services/espn'
 import axios from 'axios'
-
-export const SIM_URL =
-	'https://us-central1-nfl-pickems-5e76c.cloudfunctions.net/simulate'
-// export const SIM_URL = 'http://localhost:8080/simulate'
-export const NUM_SIMS = 5000
+import { NUM_SIMS, SIM_URL } from '../../../lib/constants/simulation.js'
 
 export const GET: RequestHandler = async ({ url }) => {
 	const week = url.searchParams.get('week')

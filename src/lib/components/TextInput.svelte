@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { uniqueId } from 'lodash-es'
+	import {uid} from 'radash'
 
 	export let label = ''
 	export let placeholder = ''
@@ -9,7 +9,7 @@
 	let className = ''
 	export { className as class }
 
-	const id = uniqueId('input_')
+	const id = uid(7)
 
 	const onKeyDown = (event) => {
 		// Submit on enter key press

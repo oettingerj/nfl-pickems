@@ -4,36 +4,26 @@ module.exports = {
 		es6: true,
 		node: true
 	},
-	extends: ['eslint:recommended'],
+	extends: [
+		'eslint:recommended',
+		'plugin:svelte/base',
+		'plugin:svelte/prettier'
+	],
 	parser: '@typescript-eslint/parser',
 	parserOptions: {
-		ecmaVersion: 'latest',
-		sourceType: 'module'
+		extraFileExtensions: ['.svelte']
 	},
-	plugins: ['svelte3', '@typescript-eslint'],
+	plugins: ['@typescript-eslint'],
 	overrides: [
 		{
 			files: ['*.svelte'],
-			processor: 'svelte3/svelte3'
+			parser: 'svelte-eslint-parser',
+			parserOptions: {
+				parser: '@typescript-eslint/parser'
+			}
 		}
 	],
-	settings: {
-		'svelte3/typescript': true
-	},
 	rules: {
-		indent: ['error', 'tab'],
-		'space-before-function-paren': [
-			'error',
-			{
-				anonymous: 'never',
-				named: 'never',
-				asyncArrow: 'always'
-			}
-		],
-		'object-curly-spacing': ['error', 'always'],
-		quotes: ['error', 'single'],
-		semi: ['error', 'never'],
-		'no-unused-vars': 'off',
-		'@typescript-eslint/no-unused-vars': 'error'
+		'no-unused-vars': 'off'
 	}
 }

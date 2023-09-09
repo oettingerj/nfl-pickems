@@ -17,7 +17,6 @@ import {
 } from 'firebase/auth'
 import type { UserInfo } from 'firebase/auth'
 import type { Timestamp } from 'firebase/firestore'
-import { has } from 'lodash-es'
 import { user } from '$lib/stores/user'
 import type { Matchup } from '$lib/services/espn'
 
@@ -241,7 +240,7 @@ export const getPicks = async (week) => {
 			getDocs(collection(game, 'picks')).then((snapshot) => {
 				snapshot.forEach((doc) => {
 					const data = doc.data()
-					if (!has(picks, doc.id)) {
+					if (!Object.hasOwn(picks, doc.id)) {
 						picks[doc.id] = {}
 					}
 					picks[doc.id][game.id] = {

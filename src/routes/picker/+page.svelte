@@ -7,7 +7,6 @@
 	import { flip } from 'svelte/animate'
 	import { type Picks, submitPicksForUser } from '$lib/services/firebase'
 	import { user } from '$lib/stores/user'
-	import { orderBy } from 'lodash-es'
 
 	export let data: {
 		submissionLock: number
@@ -101,7 +100,12 @@
 			matchup.weight = rankings[matchup.pick]
 		}
 
-		matchups = orderBy(matchups, 'weight', 'desc')
+		matchups = matchups.sort((a, b) => {
+			if (a.weight > b.weight) return 1
+			if (a.weight < b.weight) return -1
+			return 0
+		})
+
 		winPct = response.win_pct
 
 		autoRanking = false

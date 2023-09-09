@@ -18,12 +18,12 @@
 	let displayName = $user.displayName
 	let settingDisplayName = false
 
-	const avatarClick = (event) => {
+	const avatarClick = (event: MouseEvent) => {
 		event.stopPropagation()
 		showDropdown = !showDropdown
 	}
 
-	const hideModal = (event) => {
+	const hideModal = (event: MouseEvent) => {
 		event.stopPropagation()
 		showDisplayNameModal = false
 		showDropdown = false
@@ -66,7 +66,7 @@
 	<div>
 		<Button theme="none" on:click={avatarClick} class="flex items-center">
 			<span
-				class="inline-block h-10 w-10 rounded-full overflow-hidden bg-gray-100 border border-white border-2"
+				class="inline-block h-10 w-10 rounded-full overflow-hidden bg-gray-100 border border-white"
 			>
 				{#if $user.photoURL}
 					<img src={$user.photoURL} alt="user" />
@@ -84,7 +84,7 @@
 			</span>
 		</Button>
 		{#if showDropdown}
-			<Dropdown class="mr-5 mt-3">
+			<Dropdown class="mr-5 mt-3 z-50">
 				<div slot="header">
 					<p class="text-sm" role="none">Signed in as</p>
 					<p class="text-sm font-medium text-gray-900 truncate" role="none">
