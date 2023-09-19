@@ -101,8 +101,8 @@
 		}
 
 		matchups = matchups.sort((a, b) => {
-			if (a.weight > b.weight) return 1
-			if (a.weight < b.weight) return -1
+			if (a.weight > b.weight) return -1
+			if (a.weight < b.weight) return 1
 			return 0
 		})
 
@@ -124,12 +124,16 @@
 					disabled={!canSubmit(matchups)}
 					size="xl"
 					class="mr-2"
-					on:click={submitPicks}>Submit</Button
+					on:click={submitPicks}
 				>
+					Submit
+				</Button>
 			</div>
 		{/if}
 		<div class="my-10 px-5 md:px-36 w-full">
-			<h2 class="text-2xl mb-5 font-medium text-center">Most Confident</h2>
+			<h2 class="text-2xl mb-5 font-medium text-center">
+				Most Confident
+			</h2>
 			<section
 				use:dndzone={{
 					items: matchups,
@@ -154,7 +158,9 @@
 					</div>
 				{/each}
 			</section>
-			<h2 class="text-2xl mt-5 font-medium text-center">Least Confident</h2>
+			<h2 class="text-2xl mt-5 font-medium text-center">
+				Least Confident
+			</h2>
 		</div>
 		{#if screenWidth >= 768}
 			<div class="flex flex-col items-center mr-10 mt-10">
