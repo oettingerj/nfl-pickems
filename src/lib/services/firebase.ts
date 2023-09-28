@@ -58,19 +58,10 @@ export const getUser = async (uid) => {
 	return userDoc.data() as FirebaseUser
 }
 
-export const isLoggedIn = () => {
+export const getLoggedInUser = async () => {
 	const auth = getAuth()
-	return new Promise((resolve) => {
-		const unsubscribe = onAuthStateChanged(auth, async (u) => {
-			unsubscribe()
-			if (u) {
-				await getUser(u.uid).then((us) => user.set(us))
-				resolve(true)
-			} else {
-				resolve(false)
-			}
-		})
-	})
+	await auth.authStateReady()
+	return auth.currentUser
 }
 
 export const googleLogin = async () => {

@@ -7,7 +7,7 @@ export interface Game {
 	id: string
 	home: string
 	away: string
-	time: DateTime
+	time: number
 	teams: {
 		[team: string]: {
 			winPct?: number
@@ -70,7 +70,7 @@ export const getGameInfo = async (gameId) => {
 	const data = response.data
 	const gameInfo: Game = {
 		id: gameId,
-		time: DateTime.fromISO(data.header.competitions[0].date),
+		time: DateTime.fromISO(data.header.competitions[0].date).toMillis(),
 		home: data.boxscore.teams[1].team.abbreviation,
 		away: data.boxscore.teams[0].team.abbreviation,
 		teams: {}

@@ -7,6 +7,7 @@
 	import { flip } from 'svelte/animate'
 	import { type Picks, submitPicksForUser } from '$lib/services/firebase'
 	import { user } from '$lib/stores/user'
+	import { DateTime } from 'luxon'
 
 	export let data: {
 		submissionLock: number
@@ -17,6 +18,18 @@
 	}
 
 	let { submissionLock, matchups, currentWeek, games, allPicks } = data
+
+	const pastMatchups: Matchup[] = []
+	for (let i = 0; i < matchups.length; i++) {
+		const matchup = matchups[i]
+		const gameForMatchup = games.find((g) => g.id === matchup.id)
+		if (gameForMatchup && gameForMatchup.time < Date.now()) {
+			if (matchup.weight > 0) {
+				pastMatchups.push(matchup)
+			}
+			matchups.splice(i, 1)
+		}
+	}
 
 	const AUTO_RANK_URL =
 		'https://us-central1-nfl-pickems-5e76c.cloudfunctions.net/auto_rank'
@@ -41,9 +54,9 @@
 
 	let submitting = false
 	let autoRanking = false
-	let winPct
+	let winPct: number
 
-	const canSubmit = (picks) => {
+	const canSubmit = (picks: Matchup[]) => {
 		if (Date.now() >= submissionLock) {
 			return false
 		}
@@ -61,6 +74,15 @@
 		submitting = true
 		if (canSubmit(matchups)) {
 			const picks = {}
+
+			for (const pastMatchup of pastMatchups) {
+				matchups.splice(
+					matchups.length + pastMatchups.length - pastMatchup.weight,
+					0,
+					pastMatchup
+				)
+			}
+
 			for (let i = 0; i < matchups.length; i++) {
 				const matchup = matchups[i]
 				picks[matchup.id] = {
