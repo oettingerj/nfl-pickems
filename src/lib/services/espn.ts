@@ -81,12 +81,12 @@ export const getGameInfo = async (gameId) => {
 		[gameInfo.away]: {}
 	}
 
-	if (!data.winprobability) {
+	if (!data.winprobability && data.predictor) {
 		gameInfo.teams[gameInfo.home].winPct =
 			parseFloat(data.predictor.homeTeam.gameProjection) / 100
 		gameInfo.teams[gameInfo.away].winPct =
 			parseFloat(data.predictor.awayTeam.gameProjection) / 100
-	} else {
+	} else if (data.winprobability) {
 		const winPcts = data.winprobability[data.winprobability.length - 1]
 		let homeWinPct = parseFloat(winPcts.homeWinPercentage)
 		// Round to 2 decimals
